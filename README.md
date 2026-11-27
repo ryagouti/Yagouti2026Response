@@ -17,7 +17,7 @@ logarithm, a martingale central limit theorem, Anscombe's theorem). Two results 
 corrected form, Lemma 4.5 and Corollary 5.3: see the errata. Every headline result is proved, with
 no `sorry`.
 
-- Website: https://RemyDegenne.github.io/Yagouti2026Response/, with the blueprint, the referee site and the
+- Website: https://ryagouti.github.io/Yagouti2026Response/, with the blueprint, the referee site and the
   literature links (which declarations formalize which results of the paper). CI builds it on each
   push to `main`. `scripts/formalize.sh` also commits the literature links, as
   `literature/annotations.jsonl`, when the paper is formalized and after the final bump.
