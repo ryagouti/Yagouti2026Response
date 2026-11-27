@@ -148,18 +148,13 @@ lemma aRTS_smallness_all [DecidableEq 𝓐] (θ₀ : 𝓐 → ℝ) (T : (𝓐 �
 
 /-! ### The concrete aRTS consistency theorem -/
 
-/-- **Generic a.s. consistency of the aRTS proportions at an abstract hitting time**, for any
-design with a suitable hitting predicate. This generalises `aRTS_consistency` from the last
-under-sampling time `aRTSUnder` to an *arbitrary* per-arm predicate `Q` for the hitting time
-`ℓ_{n,k} = hitting (Q k ω) n`: only the throttle `¬ Q → p ≤ α ρ̂` (`hthrottle`) and the smallness
-`(N_ℓ - ℓ ρ̂_ℓ)/n → 0` (`hgs`) are design-specific, and both are taken as hypotheses. The `aRTS`
-and `aRTSFE` designs then instantiate it with their respective predicates (last under-sampling
-time, resp. forced-exploration hitting time). Everything else — the vanishing normalised
-martingale, the plug-in-target convergence, and the generic key inequality
-(`generic_ineq_of_hitting`, valid for *any* predicate) — is discharged uniformly. -/
-lemma consistency_of_hitting [Fintype 𝓐] [DecidableEq 𝓐]
-    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (hνk : ∀ a, MemLp id 2 (ν a))
-    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ) (hT : Continuous T)
+/-- **Consistency at an abstract hitting time, given the convergence of the plug-in targets**.
+The engine of `consistency_of_hitting`, with the convergence of `ρ̂_n` (`hrho`) taken as a
+hypothesis instead of being derived from the continuity of `T`. Under forced exploration every arm
+is sampled infinitely often, so `ρ̂_n → T(Θ)` needs `T` continuous at `Θ` only. -/
+lemma consistency_of_hitting_of_rho [Fintype 𝓐] [DecidableEq 𝓐]
+    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P)
+    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ)
     (hTnn : ∀ z k, 0 ≤ T z k) (hTsum : ∀ z, ∑ k, T z k = 1)
     (α : ℝ) (hα : α ∈ Set.Icc (0 : ℝ) 1)
     (Q : 𝓐 → Ω → ℕ → Prop) [∀ k ω, DecidablePred (Q k ω)]
@@ -168,7 +163,9 @@ lemma consistency_of_hitting [Fintype 𝓐] [DecidableEq 𝓐]
         ≤ α * aRTSTarget A Y θ₀ T m ω k)
     (hgs : ∀ k, ∀ᵐ ω ∂P, ∀ δ : ℝ, 0 < δ → ∀ᶠ n in atTop,
       ((pullCount A k (hitting (Q k ω) n) ω : ℝ)
-          - (hitting (Q k ω) n : ℝ) * aRTSTarget A Y θ₀ T (hitting (Q k ω) n) ω k) / (n : ℝ) < δ) :
+          - (hitting (Q k ω) n : ℝ) * aRTSTarget A Y θ₀ T (hitting (Q k ω) n) ω k) / (n : ℝ) < δ)
+    (hrho : ∀ᵐ ω ∂P, ∃ u : 𝓐 → ℝ, ∀ k,
+      Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k) atTop (𝓝 (u k))) :
     ∀ᵐ ω ∂P, ∃ u : 𝓐 → ℝ, ∀ k,
       Tendsto (fun n ↦ (pullCount A k n ω : ℝ) / (n : ℝ)) atTop (𝓝 (u k))
         ∧ Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k) atTop (𝓝 (u k)) := by
@@ -179,10 +176,6 @@ lemma consistency_of_hitting [Fintype 𝓐] [DecidableEq 𝓐]
     (Finset.single_le_sum (fun i _ ↦ hTnn z i) (Finset.mem_univ k)).trans_eq (hTsum z)
   have htgt_nn : ∀ n ω k, 0 ≤ aRTSTarget A Y θ₀ T n ω k := fun n ω k ↦ hTnn _ k
   have htgt_le1 : ∀ n ω k, aRTSTarget A Y θ₀ T n ω k ≤ 1 := fun n ω k ↦ hTle1 _ k
-  -- Plug-in-target convergence (`rho_converges`), phrased via `aRTSTarget`.
-  have hrho : ∀ᵐ ω ∂P, ∃ u : 𝓐 → ℝ, ∀ k,
-      Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k) atTop (𝓝 (u k)) :=
-    rho_converges h hνk θ₀ T hT
   -- Discharge each hypothesis of `consistency_of_generic_ae`.
   have hYsum : ∀ᵐ ω ∂P, ∀ j, ∑ k, actionIndicator A k j ω = 1 :=
     Eventually.of_forall fun ω j ↦ sum_actionIndicator A j ω
@@ -253,6 +246,32 @@ lemma consistency_of_hitting [Fintype 𝓐] [DecidableEq 𝓐]
   refine ⟨uu, fun k ↦ ⟨?_, huu k⟩⟩
   have hk := hcons_ω k
   rwa [(huu k).limUnder_eq] at hk
+
+/-- **Generic a.s. consistency of the aRTS proportions at an abstract hitting time**, for any
+design with a suitable hitting predicate. This generalises `aRTS_consistency` from the last
+under-sampling time `aRTSUnder` to an *arbitrary* per-arm predicate `Q` for the hitting time
+`ℓ_{n,k} = hitting (Q k ω) n`: only the throttle `¬ Q → p ≤ α ρ̂` (`hthrottle`) and the smallness
+`(N_ℓ - ℓ ρ̂_ℓ)/n → 0` (`hgs`) are design-specific, and both are taken as hypotheses. The `aRTS`
+and `aRTSFE` designs then instantiate it with their respective predicates (last under-sampling
+time, resp. forced-exploration hitting time). Everything else — the vanishing normalised
+martingale, the plug-in-target convergence, and the generic key inequality
+(`generic_ineq_of_hitting`, valid for *any* predicate) — is discharged uniformly. -/
+lemma consistency_of_hitting [Fintype 𝓐] [DecidableEq 𝓐]
+    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (hνk : ∀ a, MemLp id 2 (ν a))
+    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ) (hT : Continuous T)
+    (hTnn : ∀ z k, 0 ≤ T z k) (hTsum : ∀ z, ∑ k, T z k = 1)
+    (α : ℝ) (hα : α ∈ Set.Icc (0 : ℝ) 1)
+    (Q : 𝓐 → Ω → ℕ → Prop) [∀ k ω, DecidablePred (Q k ω)]
+    (hthrottle : ∀ k, ∀ᵐ ω ∂P, ∀ m, ¬ Q k ω m →
+      aRTSSelProb A k h.filtration P m ω
+        ≤ α * aRTSTarget A Y θ₀ T m ω k)
+    (hgs : ∀ k, ∀ᵐ ω ∂P, ∀ δ : ℝ, 0 < δ → ∀ᶠ n in atTop,
+      ((pullCount A k (hitting (Q k ω) n) ω : ℝ)
+          - (hitting (Q k ω) n : ℝ) * aRTSTarget A Y θ₀ T (hitting (Q k ω) n) ω k) / (n : ℝ) < δ) :
+    ∀ᵐ ω ∂P, ∃ u : 𝓐 → ℝ, ∀ k,
+      Tendsto (fun n ↦ (pullCount A k n ω : ℝ) / (n : ℝ)) atTop (𝓝 (u k))
+        ∧ Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k) atTop (𝓝 (u k)) :=
+  consistency_of_hitting_of_rho h θ₀ T hTnn hTsum α hα Q hthrottle hgs (rho_converges h hνk θ₀ T hT)
 
 /-- **Estimator consistency at an abstract hitting time**, in generic form. The
 abstract-hitting-time generalisation of `aRTS_theta_consistent`: from the joint consistency

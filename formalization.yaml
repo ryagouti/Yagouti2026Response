@@ -18,9 +18,9 @@ project:
     Theorem 4.1, strong consistency with log-log rates, and Theorem 4.2, joint asymptotic
     normality of the allocation proportions and plug-in targets, for the αRTS family of
     response-adaptive designs. Also formalized: Section 3's three concrete designs
-    (distance-based, ERADE 2025, interpolated D-Tracking); the forced-exploration variant
-    αRTS-FE of Section 5 — Theorem 5.1, Theorem 5.2 and Corollary 5.3, the last under a
-    corrected exploration-schedule condition; and the probabilistic limit theorems the paper
+    (distance-based, ERADE 2025, interpolated D-Tracking); Lemma 4.5; the forced-exploration
+    variant αRTS-FE of Section 5 — Theorem 5.1, Theorem 5.3, Lemma 5.4, Corollary 5.5 and the
+    Pearson test of Lemma 5.7, as stated in the revised paper; and the probabilistic limit theorems the paper
     invokes by citation but that are not yet in Mathlib — a martingale strong law, one-sided and
     sharp log-log laws of the iterated logarithm with the i.i.d. Hartman–Wintner LIL and optional
     skipping, a martingale CLT and an abstract Anscombe theorem — stated for their own sake and
@@ -45,19 +45,21 @@ sources:
       - "Redouane Yagouti"
       - "Rémy Degenne"
       - "Emilie Kaufmann"
-    id: "arXiv:2606.17777v1"
+    id: "arXiv:2606.17777"
     type: "preprint"
     location: >-
       Sections 2–5 and Appendices A–C, i.e. the whole theory. Out of scope: the simulation study
-      of Section 6, apart from its Lemma 6.1, which is only partially formalized. See
-      status.scope for the exceptions inside Sections 2–5 and Appendices A–C.
+      of Section 6. See status.scope for the exceptions inside Sections 2–5 and Appendices A–C.
     relationship: "formalizes"
     license: ""
     author_endorsement: "participated"   # the formaliser is an author of the source paper
     note: >-
       The LaTeX source of the paper is vendored in this repository under `arxiv/`, and all
-      statement numbers used in this file (Theorem 4.1, Lemma 4.5, Corollary 5.3, ...) are the
-      numbers of that source as compiled. The formalization is organized by an auxiliary
+      statement numbers used in this file (Theorem 4.1, Lemma 4.5, Corollary 5.5, ...) are the
+      numbers of that source as compiled. Since November 2026 that source is a revised version
+      of arXiv:2606.17777v1, not yet posted, which adopts the corrections of errata E1 and E2;
+      where a number differs from v1, the v1 number is given in parentheses. What the revision
+      changes, and how each change is formalized, is in `notes/revised-paper.md`. The formalization is organized by an auxiliary
       blueprint (`blueprint/src/`) written by Claude Opus (4.8 first, then 5) alongside the Lean,
       which decomposes the paper's proofs into small lemmas. The errors found in the paper, with
       their corrections, are in `notes/paper-errata.md`.
@@ -89,8 +91,8 @@ status:
     the generic sufficient conditions of Lemma 4.4 and their verification for αRTS (Lemma A.1);
     Theorem 4.1 with its proof of Appendix A.1; Theorem 4.2, parts (i) and (ii) — equations
     (5)–(9) — with its proof of Appendix A.2, including Lemma 4.5; and Section 5 in full:
-    Definition 5.1, Theorem 5.1 (through Lemma B.1), Theorem 5.2 and Corollary 5.3, proved in
-    Appendix B.
+    Definition 5.1, Theorem 5.1 (through Lemma 5.2), Theorem 5.3, Lemma 5.4, Corollary 5.5 and
+    Lemma 5.7 (the asymptotic χ² calibration of the Pearson test), proved in Appendix B.
 
     Also formalized, under `AlphaRAR/ForLMLExplore/`: the probabilistic limit theorems that the
     paper invokes by citation rather than proving, restated and proved here for their own sake and
@@ -101,11 +103,8 @@ status:
     Anscombe theorem. The supporting API — the o_p/O_p notation of Section 2, predictable
     quadratic variation and multivariate Taylor expansion — lives there too.
 
-    Not formalized: Lemma 6.1, the asymptotic null distribution of the Pearson statistic proved
-    in Appendix B.3, beyond its idempotent-projection ingredient — the statistic, its
-    quadratic-form rewriting and its limit await the χ²/Cochran theory; Proposition C.4
-    (variance equals inverse Fisher information) and, with it, the asymptotic-efficiency
-    Remark 4.3; and the simulation study of Section 6.
+    Not formalized: Proposition C.3 (C.4 in v1; variance equals inverse Fisher information) and,
+    with it, the asymptotic-efficiency Remark 4.3; and the simulation study of Section 6.
   # Proof-development sorries only; the deliberate placeholder sorries in the comparator
   # challenge modules (comparator/Challenge_*.lean) are excluded, as v0.4 specifies.
   sorry_count: 0
@@ -116,10 +115,11 @@ status:
     - "Quot.sound"
   size:
     # Counted over the development, `AlphaRAR/**/*.lean`; the comparator challenges are excluded.
-    # `definitions` counts def/abbrev/structure/inductive.
-    lean_lines: 22456
-    theorems_and_lemmas: 726
-    definitions: 85
+    # `definitions` counts def/abbrev/structure/inductive. Recounted on 2026-11-27 by matching
+    # declaration keywords at the start of a line.
+    lean_lines: 23803
+    theorems_and_lemmas: 780
+    definitions: 90
   main_results:
     - declaration: "AlphaRAR.aRTS_LLN"
       file: "AlphaRAR/YDK2026/ARTSRates.lean"
@@ -167,9 +167,12 @@ status:
       literature_dependencies: []
     - declaration: "AlphaRAR.aRTSFE_sparse_clt_of_contDiffAt"
       file: "AlphaRAR/YDK2026/ForcedExplorationSparse.lean"
-      source_statement: "Corollary 5.3 — componentwise CLT for αRTS-FE under a sparse target"
+      source_statement: "Corollary 5.5 (5.3 in v1) — componentwise CLT for αRTS-FE under a sparse target"
       note: >-
-        Proved under a *modified* condition (ii) of Definition 5.1; see `fidelity.divergences`.
+        For T continuous on ℝ^K. The general form, with T measurable and continuous at Θ as in
+        the revised paper, is `AlphaRAR.aRTSFE_sparse_clt_of_continuousAt`; this declaration is
+        kept, as a wrapper, because the comparator challenge checks its statement. The schedule
+        condition is the one of the revised paper (errata E2).
         `AlphaRAR.aRTSFE_sparse_clt` is the same conclusion with the regularity input taken as
         a hypothesis; `AlphaRAR.sched23_satisfies_schedule_hypotheses` shows the modified
         hypotheses are satisfiable (by h(n) = n^{2/3}).
@@ -179,14 +182,52 @@ status:
       literature_dependencies: []
     - declaration: "AlphaRAR.aRTSFE_sparse_rate_of_isARTSFE"
       file: "AlphaRAR/YDK2026/ForcedExplorationSparse.lean"
-      source_statement: "Theorem 5.2 — consistency and rate for sparse targets"
+      source_statement: "Theorem 5.3 (5.2 in v1) — consistency and rate for sparse targets"
       note: >-
         Stated from the history-level design predicate `IsARTSFE`, like every other result of
         the αRTS-FE chapter: the process-level throttle and forced-exploration facts are
-        discharged inside the proof through `throttle_of_isARTSFE`/`fe_of_isARTSFE`.
+        discharged inside the proof through `throttle_of_isARTSFE`/`fe_of_isARTSFE`. For T
+        continuous on ℝ^K, and the per-arm conclusions only; the general form, with T continuous
+        at Θ, is `AlphaRAR.aRTSFE_sparse_rate_of_continuousAt`, and the full statement of the
+        revised paper, with the rate of ‖Θ̂_n − Θ‖, is `AlphaRAR.Revised.aRTSFE_sparse_rate`.
       sorry_count: 0
       axioms: ["propext", "Classical.choice", "Quot.sound"]
       comparator_config: "comparator/aRTSFE_sparse_rate_of_isARTSFE.json"
+      literature_dependencies: []
+
+    - declaration: "AlphaRAR.Revised.componentwise_clt"
+      file: "AlphaRAR/YDK2026/Revised/ComponentwiseCLT.lean"
+      source_statement: "Lemma 4.5 — joint CLT with componentwise scaling"
+      note: >-
+        The statement of the revised paper, with the regularity hypothesis N_{n,k}/c_{n,k} → 1
+        (errata E1), proved independently of `estimatorError_joint_tendsto_multivariateGaussian`
+        along the paper's Appendix A. No comparator challenge yet.
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "AlphaRAR.Revised.aRTSFE_sparse_rate"
+      file: "AlphaRAR/YDK2026/Revised/SparseRate.lean"
+      source_statement: "Theorem 5.3 — consistency and rate for sparse targets, with the rate of ‖Θ̂_n − Θ‖"
+      note: "The full statement of the revised paper, with ρ continuous at Θ. No comparator challenge yet."
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "AlphaRAR.Revised.sparse_allocation"
+      file: "AlphaRAR/YDK2026/Revised/SparseAllocation.lean"
+      source_statement: "Lemma 5.4 — sparse-arm allocation, N_{n,k}/h(n) → 1"
+      note: "Under Conditions A and C, with T also measurable. No comparator challenge yet."
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      literature_dependencies: []
+    - declaration: "AlphaRAR.Revised.pearsonStat_tendsto_chiSquared"
+      file: "AlphaRAR/YDK2026/Revised/PearsonTest.lean"
+      source_statement: "Lemma 5.7 (6.1 in v1) — asymptotic calibration of the Pearson test"
+      note: >-
+        The Pearson statistic tends to χ²_{K−1} under H₀ for Bernoulli arms. The paper's
+        Skorokhod-representation step is replaced by the subsequence criterion. No comparator
+        challenge yet.
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
       literature_dependencies: []
 
 automation:
@@ -228,10 +269,18 @@ automation:
     (⋆) √(n log log n) ≪ h(n) = o(n) (divergence 2). Every such decision was reviewed and
     accepted by the human author.
 
+    In November 2026 the paper was revised by its authors to adopt these corrections. In an
+    interactive Claude Code session (Claude Opus 5.5), the agent compared the revision with the
+    Lean statements, wrote the new statements, checked them against the revised text and proved
+    them (`AlphaRAR/YDK2026/Revised/`): Lemma 4.5 from scratch, Theorem 5.1's limit, Theorem 5.3's
+    new rate, Lemma 5.4, Lemma 5.7, and continuity of ρ at Θ only in Theorem 5.3, Lemma 5.4 and
+    Corollary 5.5. Write-up: `notes/revised-paper.md`.
+
 fidelity:
   divergences: >-
-    1. Lemma 4.5 (Joint CLT with componentwise scaling) — hypothesis changed. The paper states
-    it, in Section 4.2, under the hypothesis that every treatment is sampled infinitely often
+    1. Lemma 4.5 (Joint CLT with componentwise scaling) — hypothesis changed; resolved by the
+    revised paper, which states the lemma with the regularity hypothesis below and is
+    formalized exactly by `AlphaRAR.Revised.componentwise_clt`. The v1 paper states it, in Section 4.2, under the hypothesis that every treatment is sampled infinitely often
     (N_{n,k} → ∞ a.s.). That hypothesis is not sufficient: the proof in Appendix A.2
     (`arxiv/sections/appendixA.tex`) verifies the self-normalized Lindeberg condition and then
     applies a martingale CLT to a randomly normalized martingale, which additionally needs a
@@ -241,8 +290,9 @@ fidelity:
     regularity, N_{n,k}/c_{k,n} → 1 for a deterministic sequence c. Theorem 4.1 and Theorem 4.2
     are unaffected (regularity holds there for free). Write-up: `notes/regularity-gap.md`.
 
-    2. Definition 5.1 (αRTS-FE) — exploration-schedule condition reversed. To recover
-    Corollary 5.3, condition (ii) of Definition 5.1, h(n) = o(√n), is replaced by
+    2. Definition 5.1 (αRTS-FE) — exploration-schedule condition reversed; resolved by the
+    revised paper, which takes h(n) = o(n) in Definition 5.1 and adds Condition C. To recover
+    Corollary 5.3 of v1 (5.5 of the revision), condition (ii) of Definition 5.1, h(n) = o(√n), is replaced by
     (⋆) √(n log log n) ≪ h(n) = o(n). This is not a weakening in the paper's direction: it is a
     different condition, and the two overlap only trivially. It is justified because (a) the
     paper's h = o(√n) is not needed for Theorem 5.1 — under Condition B forced exploration
@@ -370,7 +420,7 @@ alignment:
         An unnumbered display in the paper's proof sketch, isolated as a lemma in Lean. Stated
         for any design with an a.s. proportion limit v > 0 and consistent estimators, for T
         continuous with derivative G at Θ.
-    - source: "Remark 4.3 — asymptotic efficiency (with Proposition C.4)"
+    - source: "Remark 4.3 — asymptotic efficiency (with Proposition C.3)"
       lean: ""
       module: ""
       status: "not-formalized"
@@ -386,13 +436,25 @@ alignment:
         plug-in-target limit give N_{n,k}/n → u_k a.s. for every arm. The Theorem 4.2 direction
         is not a single generic statement; it is obtained through the shared hitting-time
         interface, instantiated separately for αRTS and αRTS-FE.
+    - source: "componentwise_clt — Lemma 4.5, joint CLT with componentwise scaling"
+      lean: "AlphaRAR.Revised.componentwise_clt"
+      module: "AlphaRAR.YDK2026.Revised.ComponentwiseCLT"
+      status: "proved"
+      relation: "exactMatch"
+      erratum: "E1"
+      note: >-
+        The revised statement, with N_{n,k}/c_{n,k} → 1 for deterministic c_{n,k} → ∞; proved
+        along Appendix A, independently of the declaration below.
     - source: "estimatorError_joint_tendsto_multivariateGaussian — Lemma 4.5, joint CLT with componentwise scaling"
       lean: "AlphaRAR.estimatorError_joint_tendsto_multivariateGaussian"
       module: "AlphaRAR.YDK2026.ResponseCLTJoint"
       status: "proved"
-      relation: "narrowMatch"
+      relation: "broadMatch"
       erratum: "E1"
-      note: "Statement strengthened by a regularity hypothesis; see fidelity.divergences item 1."
+      note: >-
+        The earlier formalization: N_{n,k}/c_{n,k} → v_k for some v_k > 0 rather than → 1, so
+        more general than the revised statement (it was a strengthening of v1's statement; see
+        fidelity.divergences item 1).
     - source: "IsARTSFE — Definition 5.1, the αRTS-FE family"
       lean: "AlphaRAR.IsARTSFE, AlphaRAR.IsExplorationSchedule"
       module: "AlphaRAR.YDK2026.ForcedExploration"
@@ -400,48 +462,91 @@ alignment:
       relation: "closeMatch"
       erratum: "E2"
       note: >-
-        Condition (ii) on the schedule h is modified; see fidelity.divergences item 2. The
-        schedule is o(n) and monotone, and forced exploration may use any distribution on the
-        least-sampled under-explored arms, not only the uniform one.
+        As in the revised paper, the schedule is non-decreasing, diverges and is o(n); h ≥ 0 is
+        not required. Forced exploration may use any distribution on the least-sampled
+        under-explored arms, not only the uniform one.
     - source: "Theorem 5.1 — validity under forced exploration"
       lean: >-
-        AlphaRAR.aRTSFE_proportion_tendsto, AlphaRAR.aRTSFE_prop_dev,
+        AlphaRAR.Revised.aRTSFE_LLN, AlphaRAR.aRTSFE_proportion_tendsto, AlphaRAR.aRTSFE_prop_dev,
         AlphaRAR.aRTSFE_prop_dev_ae, AlphaRAR.aRTSFE_count_sub_smul_ae, AlphaRAR.aRTSFE_clt_joint
+      module: "AlphaRAR.YDK2026.Revised.ForcedExplorationLLN, AlphaRAR.YDK2026.ForcedExploration"
+      status: "proved"
+      relation: "hasPart"
+      note: >-
+        The conclusions of Theorems 4.1 and 4.2 transported to αRTS-FE. `Revised.aRTSFE_LLN` is
+        the whole of Theorem 4.1 for αRTS-FE, with the limit of N_n/n identified as v; equation
+        (8) has no αRTS-FE declaration.
+    - source: "aRTSFE_smallness — Lemma 5.2 (Lemma B.1 in v1), the αRTS-FE hitting time satisfies the conditions of Lemma 4.4"
+      lean: "AlphaRAR.aRTSFE_smallness, AlphaRAR.throttle_of_isARTSFE, AlphaRAR.fe_of_isARTSFE"
       module: "AlphaRAR.YDK2026.ForcedExploration"
       status: "proved"
       relation: "hasPart"
       note: >-
-        The conclusions of Theorems 4.1 and 4.2 transported to αRTS-FE, one declaration each.
-        Theorem 4.1's rates and equation (8) have no αRTS-FE declaration, and
-        `aRTSFE_proportion_tendsto` does not identify the limit of N_n/n as v.
-    - source: "aRTSFE_sparse_rate_of_isARTSFE — Theorem 5.2, consistency and rate for sparse targets"
-      lean: "AlphaRAR.aRTSFE_sparse_rate_of_isARTSFE"
-      module: "AlphaRAR.YDK2026.ForcedExplorationSparse"
+        Part (iii) in the o(n) form, the schedule being only o(n); `throttle_of_isARTSFE` and
+        `fe_of_isARTSFE` transport the design predicate to the process, as part (ii) needs. The
+        revision's Lemma B.2 (inactivity of forced exploration) is
+        `AlphaRAR.underExplored_eventually_empty`.
+    - source: "aRTSFE_sparse_rate — Theorem 5.3 (5.2 in v1), consistency and rate for sparse targets"
+      lean: "AlphaRAR.Revised.aRTSFE_sparse_rate"
+      module: "AlphaRAR.YDK2026.Revised.SparseRate"
+      status: "proved"
+      relation: "broadMatch"
+      note: >-
+        All four conclusions of the revised statement, including the rate of ‖Θ̂_n − Θ‖ (sup
+        norm), with ρ continuous at Θ. More general: h ≥ 0 is not required, and forced
+        exploration may use any distribution on the least-sampled under-explored arms. Uses
+        Lemma B.3 of the revision, `AlphaRAR.eventually_schedShift_le_pullCount`.
+    - source: "sparse_allocation — Lemma 5.4, sparse-arm allocation"
+      lean: "AlphaRAR.Revised.sparse_allocation, AlphaRAR.Revised.ConditionC"
+      module: "AlphaRAR.YDK2026.Revised.SparseAllocation"
       status: "proved"
       relation: "closeMatch"
+      erratum: "E2"
       note: >-
-        Its first conclusion, N_{n,k} → ∞ a.s. (no starvation, proved in Appendix B.2), is
-        `AlphaRAR.aRTSFE_no_starvation` in AlphaRAR.YDK2026.ForcedExploration. For a monotone
-        schedule h = o(n) instead of o(√n), and any forced-exploration distribution on the
-        least-sampled under-explored arms.
-    - source: "aRTSFE_sparse_clt_of_contDiffAt — Corollary 5.3, componentwise CLT for αRTS-FE"
-      lean: "AlphaRAR.aRTSFE_sparse_clt_of_contDiffAt"
+        Condition C is the structure `ConditionC`, clause by clause. T is also assumed
+        measurable, which the paper leaves implicit; h ≥ 0 is not required. The pathwise core is
+        `AlphaRAR.pullCount_div_sched_tendsto_one`.
+    - source: "aRTSFE_sparse_rate_of_continuousAt — Theorem 5.3 (5.2 in v1), consistency and rate for sparse targets"
+      lean: "AlphaRAR.aRTSFE_sparse_rate_of_continuousAt, AlphaRAR.aRTSFE_sparse_rate_of_isARTSFE"
+      module: "AlphaRAR.YDK2026.ForcedExplorationSparse"
+      status: "proved"
+      relation: "hasPart"
+      note: >-
+        The per-arm conclusions (the three of v1's Theorem 5.2), without the revision's rate of
+        ‖Θ̂_n − Θ‖: `aRTSFE_sparse_rate_of_continuousAt` with T continuous at Θ, and
+        `aRTSFE_sparse_rate_of_isARTSFE` with T continuous on ℝ^K, kept for its comparator
+        challenge. The conclusion N_{n,k} → ∞ a.s. is `AlphaRAR.aRTSFE_no_starvation` in
+        AlphaRAR.YDK2026.ForcedExploration.
+    - source: "aRTSFE_sparse_clt_of_continuousAt — Corollary 5.5 (5.3 in v1), componentwise CLT for αRTS-FE"
+      lean: "AlphaRAR.aRTSFE_sparse_clt_of_continuousAt"
       module: "AlphaRAR.YDK2026.ForcedExplorationSparse"
       status: "proved"
       relation: "closeMatch"
       erratum: "E2"
       note: >-
-        Under the modified schedule condition (⋆); see fidelity.divergences item 2. Also assumes
-        the schedule regularity h(n − (K⌈h(n)⌉ + 1))/h(n) → 1, and T C² at Θ in its sparse
-        coordinates.
-    - source: "isProjection_one_sub_vecMulVec — Lemma 6.1, Pearson statistic and its asymptotic null distribution (Appendix B.3)"
-      lean: "AlphaRAR.isProjection_one_sub_vecMulVec"
-      module: "AlphaRAR.ForLMLExplore.Analysis.Matrix.Projection"
-      status: "in-progress"
+        Under Conditions A and C of the revised paper: (⋆) is stated as
+        n log log n / h(n)² → 0, the shift condition as a ratio tending to 1, and C² near Θ as
+        `ContDiffAt` of order 2 at Θ. T is also assumed measurable.
+    - source: "aRTSFE_sparse_clt_of_contDiffAt — Corollary 5.5 (5.3 in v1), componentwise CLT for αRTS-FE"
+      lean: "AlphaRAR.aRTSFE_sparse_clt_of_contDiffAt"
+      module: "AlphaRAR.YDK2026.ForcedExplorationSparse"
+      status: "proved"
+      relation: "narrowMatch"
+      erratum: "E2"
       note: >-
-        Only the idempotent-projection ingredient of the Appendix B.3 proof is formalized; the
-        statistic, its quadratic-form rewriting and its χ²_{K−1} limit need the χ²/Cochran
-        theory, which is not formalized.
+        The same with T continuous on all of ℝ^K, kept for its comparator challenge.
+    - source: "pearsonStat_tendsto_chiSquared — Lemma 5.7 (6.1 in v1), asymptotic calibration of the Pearson test"
+      lean: "AlphaRAR.Revised.pearsonStat_tendsto_chiSquared"
+      module: "AlphaRAR.YDK2026.Revised.PearsonTest"
+      status: "proved"
+      relation: "closeMatch"
+      erratum: "E1"
+      note: >-
+        The revised statement, with N_{n,k}/c_{n,k} → 1 for positive deterministic c_{n,k} → ∞
+        and 0 < θ < 1. A division by zero in the statistic is 0 in Lean; it happens with
+        probability tending to 0. The Skorokhod step of the paper's proof is replaced by the
+        subsequence criterion; the projection ingredient is also
+        `AlphaRAR.isProjection_one_sub_vecMulVec`.
     - source: "Lemma A.1 — the αRTS hitting time satisfies the conditions of Lemma 4.4"
       lean: >-
         AlphaRAR.preliminary_ineq, AlphaRAR.preliminary_small,
@@ -452,14 +557,6 @@ alignment:
       note: >-
         Parts (ii) and (iii) in deterministic form, with the throttle as a hypothesis, and (iii)
         in the sharp form ≤ 0, there being no burn-in; part (i) is `AlphaRAR.hitting_basic`.
-    - source: "Lemma B.1 — the αRTS-FE hitting time satisfies the conditions of Lemma 4.4"
-      lean: "AlphaRAR.aRTSFE_smallness, AlphaRAR.throttle_of_isARTSFE, AlphaRAR.fe_of_isARTSFE"
-      module: "AlphaRAR.YDK2026.ForcedExploration"
-      status: "proved"
-      relation: "hasPart"
-      note: >-
-        Part (iii) in the o(n) form, the schedule being only o(n); `throttle_of_isARTSFE` and
-        `fe_of_isARTSFE` transport the design predicate to the process, as part (ii) needs.
     - source: "Lemmas C.1, C.2, C.5 — technical lemmas of Appendix C"
       lean: >-
         AlphaRAR.mart_maximal, AlphaRAR.mart_maximal_dyadic, AlphaRAR.isBigOpOne_of_lintegral_le,
@@ -471,13 +568,14 @@ alignment:
       status: "proved"
       relation: "hasPart"
       note: >-
-        Lemma C.3 (Kolmogorov-type inequality) is used only through its consequence
-        `AlphaRAR.isBigOpOne_martingale_div_sqrt`, and Lemma C.6 through
+        The Kolmogorov-type inequality (Lemma C.3 of v1, removed in the revision) is used only
+        through its consequence `AlphaRAR.isBigOpOne_martingale_div_sqrt`, and Lemma C.6 through
         `AlphaRAR.isBigOpOne_of_bdd_increments`; both are in
         AlphaRAR.ForLMLExplore.Probability.StochasticOrder. `mart_maximal_dyadic` has the
         constant 32 in place of 12 in the second bound of Lemma C.1, and
-        `tendsto_posPart_sub_div` drops the monotonicity of a_n in Lemma C.5.
-    - source: "Proposition C.4 — variance equals inverse Fisher information"
+        `tendsto_posPart_sub_div` drops the monotonicity of a_n in Lemma C.5. The revision's
+        Lemma C.4 (martingale CLT, Hall–Heyde) is covered by `MartDiffArray.mart_clt`.
+    - source: "Proposition C.3 (C.4 in v1) — variance equals inverse Fisher information"
       lean: ""
       module: ""
       status: "not-formalized"
@@ -486,7 +584,7 @@ alignment:
       lean: ""
       module: ""
       status: "not-formalized"
-      note: "Empirical, not a mathematical statement; out of scope apart from Lemma 6.1 above."
+      note: "Empirical, not a mathematical statement; out of scope."
 
 acknowledgements: >-
   Built on Mathlib. Depends on LeanMachineLearning for the bandit/algorithm-environment

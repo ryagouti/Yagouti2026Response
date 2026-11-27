@@ -770,7 +770,7 @@ This is what lets the throttle be applied *inside* a conditional expectation giv
 is what makes the `α = 0` argument below work with no decay hypothesis at all. -/
 lemma measurableSet_shiftDown_aRTSFEUnder [DecidableEq 𝓐] [Finite 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (θ₀ : 𝓐 → ℝ) {T : (𝓐 → ℝ) → 𝓐 → ℝ}
-    (hT : Continuous T) (hsched : ℕ → ℝ) (k : 𝓐) (m : ℕ) :
+    (hT : Measurable T) (hsched : ℕ → ℝ) (k : 𝓐) (m : ℕ) :
     MeasurableSet[h.filtration.shiftDown m]
       {ω | aRTSFEUnder A Y θ₀ T hsched k ω m} := by
   cases m with
@@ -802,7 +802,7 @@ lemma measurableSet_shiftDown_aRTSFEUnder [DecidableEq 𝓐] [Finite 𝓐]
       exact ((hnum k').add_const _).div ((hcount k').add_const 1)
     have htarget : Measurable[𝔾 p] (fun ω ↦ aRTSTarget A Y θ₀ T (p + 1) ω k) := by
       simp only [aRTSTarget]
-      exact (measurable_pi_apply k).comp (hT.measurable.comp hest)
+      exact (measurable_pi_apply k).comp (hT.comp hest)
     simp only [aRTSFEUnder, ← count_indicator_eq_pullCount]
     exact (measurableSet_le (hcount k) (measurable_const.mul htarget)).union
       (measurableSet_le (hcount k) measurable_const)

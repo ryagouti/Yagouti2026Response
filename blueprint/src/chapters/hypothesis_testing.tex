@@ -3,7 +3,7 @@
 
 As an application of the asymptotic theory, we calibrate a Pearson chi-square
 homogeneity test on data collected by an $\aRTS$ or $\aRTSFE$ design. This
-corresponds to Section~5.3 and Appendix~B.3 of the paper.
+corresponds to Section~5.3 and Appendix~B of the revised paper (Lemma~5.7; Lemma~6.1 in arXiv v1).
 
 Consider $K$ Bernoulli arms and the homogeneity test
 \[
@@ -13,6 +13,7 @@ Consider $K$ Bernoulli arms and the homogeneity test
 \]
 
 \begin{definition}[Pearson statistic]\label{def:pearson_stat}
+\lean{AlphaRAR.Revised.pearsonStat, AlphaRAR.Revised.pooledEstimate}\leanok
 \uses{def:estimator, def:counts}
 Let $S_{n,k} := N_{n,k}\hat{\theta}_{n,k}$ and
 $\tilde{\theta}_n := \sum_{k=1}^K \frac{N_{n,k}}{n}\hat{\theta}_{n,k}$ be the
@@ -24,6 +25,7 @@ pooled estimator. The \emph{Pearson chi-square statistic} is
 \end{definition}
 
 \begin{lemma}[Quadratic-form rewriting]\label{lem:pearson_quadform}
+\lean{AlphaRAR.Revised.pearsonStat_eq, AlphaRAR.Revised.pearson_algebra}\leanok
 \uses{def:pearson_stat}
 With $Y_n := (\sqrt{N_{n,k}}(\hat{\theta}_{n,k}-\theta))_{k\in[K]}$ and
 $s_n := (\sqrt{\omega_{n,k}})_{k\in[K]}$ where $\omega_{n,k}:=N_{n,k}/n$, under
@@ -34,7 +36,7 @@ $\mathcal{H}_0$ (common value $\theta$),
 \]
 \end{lemma}
 
-\begin{proof}
+\begin{proof}\leanok
 Under $\mathcal{H}_0$, $\sqrt{N_{n,k}}(\tilde{\theta}_n-\theta)
  = \sqrt{\omega_{n,k}}\sum_j\sqrt{\omega_{n,j}}[Y_n]_j$, so
 $\sqrt{N_{n,k}}(\hat{\theta}_{n,k}-\tilde{\theta}_n) = [Y_n - s_n s_n^\top Y_n]_k$.
@@ -55,30 +57,45 @@ $s^\top s = \sum_k v_k = 1$, so $(I-ss^\top)^2 = I - 2ss^\top + s(s^\top s)s^\to
 \end{proof}
 
 \begin{lemma}[Asymptotic null distribution of the Pearson statistic]\label{lem:pearson}
+\lean{AlphaRAR.Revised.pearsonStat_tendsto_chiSquared}\leanok
 \uses{def:pearson_stat}
-Consider a RAR procedure with $N_{n,k}\to\infty$ a.s.\ for all $k$ (in
-particular any $\aRTS$ design under Condition~\textbf{B}, or any $\aRTSFE$
-design). Under $\mathcal{H}_0$,
+Consider $K$ Bernoulli arms and a RAR procedure such that, for every $k$, there is a deterministic
+positive sequence $c_{n,k}\to\infty$ with $N_{n,k}/c_{n,k}\to1$ a.s. Under
+$\mathcal{H}_0:\theta_1=\dots=\theta_K=\theta$ with $0<\theta<1$,
 \[
   \mathcal{X}_n \eqdist \chi^2_{K-1}.
 \]
+(Lemma~5.7 of the revised paper. arXiv v1 assumed only $N_{n,k}\to\infty$, which is not enough for
+Lemma~\ref{lem:componentwise}, erratum E1.)
 \end{lemma}
 
-\begin{proof}
-\uses{lem:pearson_quadform, lem:projection, lem:componentwise, thm:LLN, thm:cochran}
-By Lemma~\ref{lem:componentwise}, $\frac{1}{\sqrt{\theta(1-\theta)}}Y_n
+\begin{proof}\leanok
+\uses{lem:pearson_quadform, lem:projection, lem:componentwise, thm:cochran}
+By Lemma~\ref{lem:componentwise}, $Z_n:=\frac{1}{\sqrt{\theta(1-\theta)}}Y_n
 \eqdist\mathcal{N}(0,I_K)$ (Bernoulli variance $V_k=\theta(1-\theta)$ under
-$\mathcal{H}_0$). By Theorem~\ref{thm:LLN}, $\tilde{\theta}_n\to\theta$ and
-$s_n\to s=(\sqrt{v_1},\dots,\sqrt{v_K})$, so $I-s_ns_n^\top\to I-ss^\top$, an
-orthogonal projection of rank $K-1$ by Lemma~\ref{lem:projection}. Slutsky's
-lemma and Lemma~\ref{lem:pearson_quadform} give
-$\mathcal{X}_n\eqdist Z^\top(I-ss^\top)Z$ with $Z\sim\mathcal{N}(0,I_K)$, which is
-$\chi^2_{K-1}$.
+$\mathcal{H}_0$). The estimators are consistent, so $\tilde{\theta}_n\to\theta$ a.s. Let
+$\bar s_n:=(\sqrt{c_{n,k}/\sum_jc_{n,j}})_k$, a deterministic unit vector; since
+$\sum_kN_{n,k}=n$ and $N_{n,k}/c_{n,k}\to1$, $\|s_n-\bar s_n\|\to0$ a.s. The $s_n$ need not
+converge, so we argue along subsequences. Given any subsequence, the unit sphere being compact, a
+further subsequence has $\bar s_n\to s$ for some unit vector $s$, hence $s_n\to s$ a.s. Along it,
+Slutsky and Lemma~\ref{lem:pearson_quadform} give $\mathcal{X}_n\eqdist Z^\top(I-ss^\top)Z$ with
+$Z\sim\mathcal{N}(0,I_K)$, which is $\chi^2_{K-1}$ by Lemma~\ref{lem:projection} and
+Theorem~\ref{thm:cochran}, whatever $s$. Every subsequence thus has a further subsequence with the
+same limit, so the whole sequence converges.
+
+\emph{Formalization.} \texttt{AlphaRAR.Revised.pearsonStat\_tendsto\_chiSquared}. The paper's proof
+uses the Skorokhod representation theorem instead of subsequences; Mathlib does not have it, so the
+subsequence criterion \texttt{tendsto\_of\_subseq\_tendsto} is used. The ingredients are
+\texttt{pearsonZ\_tendsto} ($Z_n\eqdist\mathcal N(0,I_K)$, from
+\texttt{AlphaRAR.Revised.componentwise\_clt}), \texttt{pooledEstimate\_tendsto},
+\texttt{propSqrt\_sub\_targetSqrt} and \texttt{stdGaussian\_map\_projOff} (from Tau Ceti's
+\texttt{Submodule.map\_norm\_sq\_starProjection\_stdGaussian}).
 \end{proof}
 
 \begin{remark}\label{rem:test_level}
 Lemma~\ref{lem:pearson} shows that rejecting $\mathcal{H}_0$ when $\mathcal{X}_n$
 exceeds the $0.95$-quantile of $\chi^2_{K-1}$ is asymptotically a level-$0.05$
-test, valid for all $\aRTS$ designs (under Condition~\textbf{B}) and all
-$\aRTSFE$ designs.
+test. Its assumptions hold for $\aRTS$ and $\aRTSFE$ designs under Condition~\textbf{B}, with
+$c_{n,k}=nv_k$, and for $\aRTSFE$ designs under Condition~\textbf{C}, with $c_{n,k}=h(n)$ when
+$v_k=0$ and $c_{n,k}=nv_k$ otherwise.
 \end{remark}

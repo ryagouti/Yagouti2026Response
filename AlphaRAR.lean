@@ -62,3 +62,8 @@ public import AlphaRAR.YDK2026.ResponseIncrement
 public import AlphaRAR.YDK2026.ResponseLIL
 public import AlphaRAR.YDK2026.ResponseSparseCLT
 public import AlphaRAR.YDK2026.ResponseTruncation
+public import AlphaRAR.YDK2026.Revised.ComponentwiseCLT
+public import AlphaRAR.YDK2026.Revised.ForcedExplorationLLN
+public import AlphaRAR.YDK2026.Revised.PearsonTest
+public import AlphaRAR.YDK2026.Revised.SparseAllocation
+public import AlphaRAR.YDK2026.Revised.SparseRate

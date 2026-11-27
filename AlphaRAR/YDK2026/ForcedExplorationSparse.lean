@@ -53,7 +53,7 @@ hypothesis of the form "`ρ̂ ≤ g` for a deterministic `g`" is not dischargeab
 lemma not_pulled_of_not_aRTSFEUnder_of_alpha_zero [DecidableEq 𝓐] [Finite 𝓐]
     [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {θ₀ : 𝓐 → ℝ} {T : (𝓐 → ℝ) → 𝓐 → ℝ}
-    (hT : Continuous T) {hsched : ℕ → ℝ} (hARTSFE : IsARTSFE alg θ₀ T hsched 0) (k : 𝓐) :
+    (hT : Measurable T) {hsched : ℕ → ℝ} (hARTSFE : IsARTSFE alg θ₀ T hsched 0) (k : 𝓐) :
     ∀ᵐ ω ∂P, ∀ m, ¬ aRTSFEUnder A Y θ₀ T hsched k ω m → A m ω ≠ k :=
   ae_action_ne_of_selProb_nonpos h
     (fun m ↦ (measurableSet_shiftDown_aRTSFEUnder h θ₀ hT hsched k m).compl)
@@ -324,7 +324,7 @@ fixes a sparse arm's sample size to first order"]
 lemma throttled_count_div_sched_tendsto_zero [DecidableEq 𝓐] [Finite 𝓐]
     [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {hsched : ℕ → ℝ} {θ₀ : 𝓐 → ℝ}
-    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Continuous T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
+    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Measurable T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
     (hα : 0 ≤ α)
     (hARTSFE : IsARTSFE alg θ₀ T hsched α)
     (hsched_atTop : Tendsto hsched atTop atTop)
@@ -563,20 +563,13 @@ lemma abs_estimator_sub_le_rate_loglog_N [DecidableEq 𝓐]
     rw [mul_assoc]; exact mul_le_mul_of_nonneg_left hprodge hann
   nlinarith [h1, h2]
 
-/-- **Consistency and rate for sparse targets** [YDK26, Theorem 5.2]. Under Condition **A**
-only (no non-sparsity), any forced-exploration design satisfies, for every arm `k`, almost surely:
-`N_{n,k} → ∞`; `N_{n,k}/n → v_k = T(θ)_k` (allowing `v_k = 0`); and
-`|θ̂_{n,k} - θ_k| = O(√(log log N_{n,k} / N_{n,k}))` (the estimator LIL scaled by the arm's *own*
-sample count). All three follow from `aRTSFE_no_starvation` (`N → ∞`, the sparse enabler): it forces
-every arm sampled infinitely often, hence `θ̂ → θ` (`estimator_ae_tendsto_of_pullCount_atTop`, no
-positivity needed), whence `ρ̂ → T(θ)` and — through the matching `consistency_of_hitting` (which
-never uses positivity) — `N/n → T(θ)`; the rate is `abs_estimator_sub_le_rate_loglog_N`. The design
-enters through the design predicate `IsARTSFE`: its throttle field feeds the matching, its
-forced-exploration field the no-starvation. -/
-theorem aRTSFE_sparse_rate_of_isARTSFE [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
+/-- **Consistency and rate for sparse targets, with `T` continuous at `Θ` only** (the revised
+paper's Theorem 5.3). The general form of `aRTSFE_sparse_rate_of_isARTSFE`: `T` need only be
+continuous at `Θ = ν.means`. -/
+theorem aRTSFE_sparse_rate_of_continuousAt [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
     [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (hνk : ∀ a, MemLp id 2 (ν a))
-    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ) (hT : Continuous T)
+    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ) (hTc : ContinuousAt T ν.means)
     (hTnn : ∀ z k, 0 ≤ T z k) (hTsum : ∀ z, ∑ k, T z k = 1)
     (α : ℝ) (hα : α ∈ Set.Icc (0 : ℝ) 1)
     {hsched : ℕ → ℝ} (hh : IsExplorationSchedule hsched)
@@ -604,16 +597,20 @@ theorem aRTSFE_sparse_rate_of_isARTSFE [Fintype 𝓐] [DecidableEq 𝓐] [Standa
       exact hest (hNall k')
     filter_upwards [ae_all_iff.mpr hper] with ω hω
     exact tendsto_pi_nhds.mpr hω
-  -- Plug-in target consistency `ρ̂_{n,k} → T(θ)_k` by continuity.
+  -- Plug-in target consistency `ρ̂_{n,k'} → T(θ)_{k'}`, by continuity at `θ` only: forced
+  -- exploration samples every arm infinitely often, so `θ̂_n → θ`.
+  have hρall : ∀ᵐ ω ∂P, ∀ k', Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k') atTop
+      (𝓝 (T ν.means k')) := by
+    filter_upwards [hθconv] with ω hω k'
+    exact tendsto_pi_nhds.mp (hTc.tendsto.comp hω) k'
   have hρconv : ∀ᵐ ω ∂P, Tendsto (fun n ↦ aRTSTarget A Y θ₀ T n ω k) atTop
-      (𝓝 (T ν.means k)) := by
-    filter_upwards [hθconv] with ω hω
-    exact tendsto_pi_nhds.mp ((hT.tendsto _).comp hω) k
+      (𝓝 (T ν.means k)) := hρall.mono fun ω hω ↦ hω k
   -- `N/n → T(θ)_k`: the common matching limit `u_k` equals `T(θ)_k` (uniqueness with `ρ̂ → T(θ)`).
   have hprop : ∀ᵐ ω ∂P, Tendsto (fun n ↦ (pullCount A k n ω : ℝ) / (n : ℝ))
       atTop (𝓝 (T ν.means k)) := by
-    filter_upwards [consistency_of_hitting h hνk θ₀ T hT hTnn hTsum α hα
-      (aRTSFEUnder A Y θ₀ T hsched) hthrottle (aRTSFE_smallness_all θ₀ T hTnn hh), hρconv]
+    filter_upwards [consistency_of_hitting_of_rho h θ₀ T hTnn hTsum α hα
+      (aRTSFEUnder A Y θ₀ T hsched) hthrottle (aRTSFE_smallness_all θ₀ T hTnn hh)
+      (hρall.mono fun ω hω ↦ ⟨fun k' ↦ T ν.means k', hω⟩), hρconv]
       with ω hmatch hρω
     obtain ⟨u, hu⟩ := hmatch
     rw [← tendsto_nhds_unique (hu k).2 hρω]
@@ -622,6 +619,34 @@ theorem aRTSFE_sparse_rate_of_isARTSFE [Fintype 𝓐] [DecidableEq 𝓐] [Standa
     abs_estimator_sub_le_rate_loglog_N h k (θ₀ k) (hνk k)
       (hNinf.mono fun ω hω ↦ hω k)] with ω h1 h2 h3
   exact ⟨h1, h2, h3⟩
+
+
+/-- **Consistency and rate for sparse targets** [YDK26, Theorem 5.2]. Under Condition **A**
+only (no non-sparsity), any forced-exploration design satisfies, for every arm `k`, almost surely:
+`N_{n,k} → ∞`; `N_{n,k}/n → v_k = T(θ)_k` (allowing `v_k = 0`); and
+`|θ̂_{n,k} - θ_k| = O(√(log log N_{n,k} / N_{n,k}))` (the estimator LIL scaled by the arm's *own*
+sample count). All three follow from `aRTSFE_no_starvation` (`N → ∞`, the sparse enabler): it forces
+every arm sampled infinitely often, hence `θ̂ → θ` (`estimator_ae_tendsto_of_pullCount_atTop`, no
+positivity needed), whence `ρ̂ → T(θ)` and — through the matching `consistency_of_hitting` (which
+never uses positivity) — `N/n → T(θ)`; the rate is `abs_estimator_sub_le_rate_loglog_N`. The design
+enters through the design predicate `IsARTSFE`: its throttle field feeds the matching, its
+forced-exploration field the no-starvation. -/
+theorem aRTSFE_sparse_rate_of_isARTSFE [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
+    [Nonempty 𝓐]
+    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (hνk : ∀ a, MemLp id 2 (ν a))
+    (θ₀ : 𝓐 → ℝ) (T : (𝓐 → ℝ) → 𝓐 → ℝ) (hT : Continuous T)
+    (hTnn : ∀ z k, 0 ≤ T z k) (hTsum : ∀ z, ∑ k, T z k = 1)
+    (α : ℝ) (hα : α ∈ Set.Icc (0 : ℝ) 1)
+    {hsched : ℕ → ℝ} (hh : IsExplorationSchedule hsched)
+    (hARTSFE : IsARTSFE alg θ₀ T hsched α) (k : 𝓐) :
+    ∀ᵐ ω ∂P, Tendsto (fun n ↦ pullCount A k n ω) atTop atTop ∧
+      Tendsto (fun n ↦ (pullCount A k n ω : ℝ) / (n : ℝ))
+        atTop (𝓝 (T ν.means k)) ∧
+      ∃ C', ∀ᶠ n in atTop,
+        |estimator (fun j ↦ actionIndicator A k j ω) (Y · ω) (θ₀ k) n - ν.means k|
+          ≤ C' * √(Real.log (Real.log (pullCount A k n ω : ℝ)) / (pullCount A k n ω : ℝ)) :=
+  aRTSFE_sparse_rate_of_continuousAt h hνk θ₀ T hT.continuousAt hTnn hTsum α hα hh
+    hARTSFE k
 
 /-! ### A concrete admissible schedule
 
@@ -950,7 +975,7 @@ Note `n₀` and `g` are allowed to depend on `ω`, which is essential: the decay
 from the law of the iterated logarithm and is genuinely random. -/
 lemma fEfed_of_decay [Finite 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {hsched : ℕ → ℝ} {θ₀ : 𝓐 → ℝ}
-    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Continuous T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
+    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Measurable T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
     (hα : 0 ≤ α)
     (hARTSFE : IsARTSFE alg θ₀ T hsched α)
     (hsched_atTop : Tendsto hsched atTop atTop)
@@ -991,17 +1016,11 @@ lemma fEfed_of_decay [Finite 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐] 
       ≤ count (fun i ↦ throttledIndicator A Y θ₀ T hsched k i ω) (m + 1)
     rw [count_succ, hval]
 
-/-- **The sparse componentwise CLT for `aRTSFE`, with the `FEfed` hypothesis discharged**
-[YDK26, Corollary 5.3], under a corrected schedule condition (erratum E2 of
-`notes/paper-errata.md`). This is the capstone of `maths/sparse-clt-fix.md`: `aRTSFE_sparse_clt`
-assumes that each sparse arm is eventually fed only by forced exploration; here that assumption is
-*proved*, from
-
-* `hstar` — the reversed schedule condition `(⋆) : m log log m = o(h(m)²)`, which replaces the
-  paper's `h(m) = o(√m)` and is satisfiable exactly where the paper's condition fails
-  (`sched23_star`, `not_isSqrtSmall_sched23`);
-* `hT2` — the target is `C²` at `Θ` on the sparse arms. -/
-theorem aRTSFE_sparse_clt_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
+/-- **Sparse arms are eventually fed only by forced exploration** (Steps 3–4 of
+`maths/sparse-clt-fix.md`), the `FEfed` hypothesis of `aRTSFE_sparse_clt` discharged under the
+hypotheses of `aRTSFE_sparse_clt_of_contDiffAt`: for every arm with `T(Θ)_a = 0`, the pulls not
+caused by forced exploration are counted by a monotone `E = o(h)`. -/
+lemma aRTSFE_fEfed_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
     [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (θ₀ : 𝓐 → ℝ)
     (hνk : ∀ a, MemLp id 2 (ν a))
@@ -1009,18 +1028,16 @@ theorem aRTSFE_sparse_clt_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [Stand
     (hshift : Tendsto
       (fun n ↦ hsched (n - (Fintype.card 𝓐 * ⌈hsched n⌉₊ + 1)) / hsched n) atTop (𝓝 1))
     (hstar : Tendsto (fun m : ℕ ↦ (m : ℝ) * log (log m) / (hsched m * hsched m)) atTop (𝓝 0))
-    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Continuous T) (hTnn : ∀ z a, 0 ≤ T z a)
-    (hTsum : ∀ z, ∑ a, T z a = 1)
+    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hTm : Measurable T) (hTc : ContinuousAt T ν.means)
+    (hTnn : ∀ z a, 0 ≤ T z a) (hTsum : ∀ z, ∑ a, T z a = 1)
     {α : ℝ} (hα : α ∈ Set.Icc (0 : ℝ) 1) (hARTSFE : IsARTSFE alg θ₀ T hsched α)
     (hT2 : ∀ a, T ν.means a = 0 → ContDiffAt ℝ 2 (T · a) ν.means) :
-    TendstoInDistribution (fun n ω ↦ (WithLp.toLp 2 (fun k ↦
-        √(count (actionIndicator A k · ω) n)
-          * (estimator (actionIndicator A k · ω) (Y · ω) (θ₀ k) n - ν.means k))
-            : EuclideanSpace ℝ 𝓐)) atTop id (fun _ ↦ P)
-      (multivariateGaussian 0 (Matrix.diagonal (fun a ↦ Var[id; ν a]))) := by
+    ∀ᵐ ω ∂P, ∀ a, T ν.means a = 0 → ∃ (n₀ : ℕ) (E : ℕ → ℝ), Monotone E ∧
+      (∀ m, n₀ ≤ m → A m ω = a → (¬ ∃ j, (pullCount A j m ω : ℝ) ≤ hsched m) →
+        E m + 1 ≤ E (m + 1)) ∧
+      Tendsto (fun n ↦ E n / hsched n) atTop (𝓝 0) := by
   classical
   have hfe := fe_of_isARTSFE h hARTSFE
-  have hthrottle := fun a ↦ throttle_of_isARTSFE h hARTSFE a
   -- Condition **A** already gives, for *every* arm, that the count diverges, that the proportion
   -- converges to `T(Θ)_a` (no positivity needed), and the `N`-scaled loglog rate.
   have hsr : ∀ᵐ ω ∂P, ∀ a : 𝓐,
@@ -1031,16 +1048,8 @@ theorem aRTSFE_sparse_clt_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [Stand
         |estimator (fun j ↦ actionIndicator A a j ω) (Y · ω) (θ₀ a) n - ν.means a|
           ≤ C' * √(Real.log (Real.log (pullCount A a n ω : ℝ))
               / (pullCount A a n ω : ℝ)) :=
-    ae_all_iff.mpr fun a ↦ aRTSFE_sparse_rate_of_isARTSFE h hνk θ₀ T hT hTnn hTsum α hα
+    ae_all_iff.mpr fun a ↦ aRTSFE_sparse_rate_of_continuousAt h hνk θ₀ T hTc hTnn hTsum α hα
       hh hARTSFE a
-  have hprop : ∀ᵐ ω ∂P, ∀ a : 𝓐, T ν.means a ≠ 0 →
-      Tendsto (fun n ↦ (pullCount A a n ω : ℝ) / (n : ℝ)) atTop
-        (𝓝 (T ν.means a)) := by
-    filter_upwards [hsr] with ω hω a _
-    exact (hω a).2.1
-  refine aRTSFE_sparse_clt (v := fun a ↦ T ν.means a) h θ₀ hνk hh hshift
-    (fun a ↦ T ν.means a = 0)
-    (fun a ha ↦ lt_of_le_of_ne (hTnn _ a) (Ne.symm ha)) hfe ?_ hprop
   -- The deterministic floor `L(n) = h(n - W(n))` that forced exploration guarantees.
   set L : ℕ → ℝ := fun n ↦ hsched (n - (Fintype.card 𝓐 * ⌈hsched n⌉₊ + 1)) with hLdef
   have hspos : ∀ᶠ n : ℕ in atTop, (0 : ℝ) < hsched n := hh.tendsto_atTop.eventually_gt_atTop 0
@@ -1132,9 +1141,85 @@ theorem aRTSFE_sparse_clt_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [Stand
         _ ≤ α * (Cq * (2 * (Real.log (Real.log i) / hsched i))) :=
             mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left hstep hCq0) hα.1
         _ = α * (2 * Cq) * (Real.log (Real.log i) / hsched i) := by ring
-    filter_upwards [fEfed_of_decay (k := a) h hT hTnn hα.1 hARTSFE hh.tendsto_atTop hsum hsqrt
+    filter_upwards [fEfed_of_decay (k := a) h hTm hTnn hα.1 hARTSFE hh.tendsto_atTop hsum hsqrt
       hdecay] with ω hω _
     exact hω
   · exact ae_of_all _ fun ω hcon ↦ absurd hcon hfed
+
+/-- **The sparse componentwise CLT, with `T` continuous at `Θ` only** (the revised paper's
+Corollary 5.5, under Conditions A and C). The general form of `aRTSFE_sparse_clt_of_contDiffAt`. -/
+theorem aRTSFE_sparse_clt_of_continuousAt [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
+    [Nonempty 𝓐]
+    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (θ₀ : 𝓐 → ℝ)
+    (hνk : ∀ a, MemLp id 2 (ν a))
+    {hsched : ℕ → ℝ} (hh : IsExplorationSchedule hsched)
+    (hshift : Tendsto
+      (fun n ↦ hsched (n - (Fintype.card 𝓐 * ⌈hsched n⌉₊ + 1)) / hsched n) atTop (𝓝 1))
+    (hstar : Tendsto (fun m : ℕ ↦ (m : ℝ) * log (log m) / (hsched m * hsched m)) atTop (𝓝 0))
+    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hTm : Measurable T) (hTc : ContinuousAt T ν.means)
+    (hTnn : ∀ z a, 0 ≤ T z a)
+    (hTsum : ∀ z, ∑ a, T z a = 1)
+    {α : ℝ} (hα : α ∈ Set.Icc (0 : ℝ) 1) (hARTSFE : IsARTSFE alg θ₀ T hsched α)
+    (hT2 : ∀ a, T ν.means a = 0 → ContDiffAt ℝ 2 (T · a) ν.means) :
+    TendstoInDistribution (fun n ω ↦ (WithLp.toLp 2 (fun k ↦
+        √(count (actionIndicator A k · ω) n)
+          * (estimator (actionIndicator A k · ω) (Y · ω) (θ₀ k) n - ν.means k))
+            : EuclideanSpace ℝ 𝓐)) atTop id (fun _ ↦ P)
+      (multivariateGaussian 0 (Matrix.diagonal (fun a ↦ Var[id; ν a]))) := by
+  classical
+  have hfe := fe_of_isARTSFE h hARTSFE
+  -- Condition **A** already gives, for *every* arm, that the count diverges, that the proportion
+  -- converges to `T(Θ)_a` (no positivity needed), and the `N`-scaled loglog rate.
+  have hsr : ∀ᵐ ω ∂P, ∀ a : 𝓐,
+      Tendsto (fun n ↦ pullCount A a n ω) atTop atTop ∧
+      Tendsto (fun n ↦ (pullCount A a n ω : ℝ) / (n : ℝ))
+        atTop (𝓝 (T ν.means a)) ∧
+      ∃ C' : ℝ, ∀ᶠ n in atTop,
+        |estimator (fun j ↦ actionIndicator A a j ω) (Y · ω) (θ₀ a) n - ν.means a|
+          ≤ C' * √(Real.log (Real.log (pullCount A a n ω : ℝ))
+              / (pullCount A a n ω : ℝ)) :=
+    ae_all_iff.mpr fun a ↦ aRTSFE_sparse_rate_of_continuousAt h hνk θ₀ T hTc hTnn hTsum α hα
+      hh hARTSFE a
+  have hprop : ∀ᵐ ω ∂P, ∀ a : 𝓐, T ν.means a ≠ 0 →
+      Tendsto (fun n ↦ (pullCount A a n ω : ℝ) / (n : ℝ)) atTop
+        (𝓝 (T ν.means a)) := by
+    filter_upwards [hsr] with ω hω a _
+    exact (hω a).2.1
+  exact aRTSFE_sparse_clt (v := fun a ↦ T ν.means a) h θ₀ hνk hh hshift
+    (fun a ↦ T ν.means a = 0)
+    (fun a ha ↦ lt_of_le_of_ne (hTnn _ a) (Ne.symm ha)) hfe
+    (aRTSFE_fEfed_of_contDiffAt h θ₀ hνk hh hshift hstar hTm hTc hTnn hTsum hα hARTSFE hT2)
+    hprop
+
+
+/-- **The sparse componentwise CLT for `aRTSFE`, with the `FEfed` hypothesis discharged**
+[YDK26, Corollary 5.3], under a corrected schedule condition (erratum E2 of
+`notes/paper-errata.md`). This is the capstone of `maths/sparse-clt-fix.md`: `aRTSFE_sparse_clt`
+assumes that each sparse arm is eventually fed only by forced exploration; here that assumption is
+*proved*, from
+
+* `hstar` — the reversed schedule condition `(⋆) : m log log m = o(h(m)²)`, which replaces the
+  paper's `h(m) = o(√m)` and is satisfiable exactly where the paper's condition fails
+  (`sched23_star`, `not_isSqrtSmall_sched23`);
+* `hT2` — the target is `C²` at `Θ` on the sparse arms. -/
+theorem aRTSFE_sparse_clt_of_contDiffAt [Fintype 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐]
+    [Nonempty 𝓐]
+    (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (θ₀ : 𝓐 → ℝ)
+    (hνk : ∀ a, MemLp id 2 (ν a))
+    {hsched : ℕ → ℝ} (hh : IsExplorationSchedule hsched)
+    (hshift : Tendsto
+      (fun n ↦ hsched (n - (Fintype.card 𝓐 * ⌈hsched n⌉₊ + 1)) / hsched n) atTop (𝓝 1))
+    (hstar : Tendsto (fun m : ℕ ↦ (m : ℝ) * log (log m) / (hsched m * hsched m)) atTop (𝓝 0))
+    {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Continuous T) (hTnn : ∀ z a, 0 ≤ T z a)
+    (hTsum : ∀ z, ∑ a, T z a = 1)
+    {α : ℝ} (hα : α ∈ Set.Icc (0 : ℝ) 1) (hARTSFE : IsARTSFE alg θ₀ T hsched α)
+    (hT2 : ∀ a, T ν.means a = 0 → ContDiffAt ℝ 2 (T · a) ν.means) :
+    TendstoInDistribution (fun n ω ↦ (WithLp.toLp 2 (fun k ↦
+        √(count (actionIndicator A k · ω) n)
+          * (estimator (actionIndicator A k · ω) (Y · ω) (θ₀ k) n - ν.means k))
+            : EuclideanSpace ℝ 𝓐)) atTop id (fun _ ↦ P)
+      (multivariateGaussian 0 (Matrix.diagonal (fun a ↦ Var[id; ν a]))) :=
+  aRTSFE_sparse_clt_of_continuousAt h θ₀ hνk hh hshift hstar hT.measurable hT.continuousAt hTnn
+    hTsum hα hARTSFE hT2
 
 end AlphaRAR

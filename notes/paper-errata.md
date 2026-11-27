@@ -27,6 +27,10 @@ are numbered `E1`, `E2`, … and never renumbered.
   regularity hypothesis, with per-arm normalizers.
 - **Kind:** false statement (missing hypothesis).
 - **Found:** during the formalization, July 2026 (`notes/regularity-gap.md`).
+- **Status:** fixed in the revised paper (local `arxiv/`, November 2026). Its Lemma 4.5 assumes
+  `N_{n,k}/c_{n,k} → 1` a.s. for deterministic `c_{n,k} → ∞`, and its Lemma 5.7 (former 6.1) assumes
+  the same. Both are proved in Lean as stated: `AlphaRAR.Revised.componentwise_clt` and
+  `AlphaRAR.Revised.pearsonStat_tendsto_chiSquared` (`notes/revised-paper.md`).
 
 ## E2. Corollary 5.3: not a consequence of Lemma 4.5 under condition (ii) of Definition 5.1
 
@@ -48,6 +52,13 @@ are numbered `E1`, `E2`, … and never renumbered.
   `AlphaRAR.sched23_satisfies_schedule_hypotheses`.
 - **Kind:** gap in the proof; the corrected statement changes a hypothesis.
 - **Found:** during the formalization, July 2026 (`maths/sparse-clt-fix.md`).
+- **Status:** fixed in the revised paper (local `arxiv/`, November 2026). Definition 5.1 now asks
+  `h = o(n)`. The new Condition C asks `√(n log log n) = o(h(n))` and `h(n − K⌈h(n)⌉ − 1) ∼ h(n)`.
+  The new Lemma 5.4 gives `N_{n,k}/h(n) → 1` for sparse arms, and Corollary 5.5 (former 5.3) is
+  stated under Conditions A and C. Lemma 5.4 is proved in Lean as
+  `AlphaRAR.Revised.sparse_allocation`, and Corollary 5.5 as
+  `AlphaRAR.aRTSFE_sparse_clt_of_continuousAt`. Both assume `ρ` continuous at `Θ`, as in the
+  paper, and `ρ` measurable (`notes/revised-paper.md`).
 
 ## E3. Appendix A.2: the martingale LIL of Stout needs `⟨M⟩_n → ∞`
 
@@ -73,3 +84,7 @@ are numbered `E1`, `E2`, … and never renumbered.
 - **Lean:** `AlphaRAR.tendstoInMeasure_lindeberg_wArray` (the Lindeberg condition).
 - **Kind:** typo.
 - **Found:** during the formalization, July 2026 (`notes/regularity-gap.md`, section 5).
+- **Status:** no longer applies to the revised paper (local `arxiv/`, November 2026): the proof of
+  Lemma 4.5 containing this step was replaced. The new proof checks the conditional Lindeberg
+  condition by dominated convergence, without this inequality. It is formalized as
+  `AlphaRAR.Revised.cw_lindeberg_tendsto` (`notes/revised-paper.md`).

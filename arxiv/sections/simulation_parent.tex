@@ -1,4 +1,3 @@
-
 We now complement our asymptotic analysis with a simulation study designed to evaluate the behavior of $\alpha$RTS designs. The implementation and simulation scripts used in this study can be accessed at \url{https://github.com/ryagouti/rebalancing-targeting-strategies}.
 
 	Our experiments address three questions. First, we investigate the
@@ -16,7 +15,7 @@ We now complement our asymptotic analysis with a simulation study designed to ev
 \subsection{Convergence of Allocation Proportions and Plugin Estimate}
 
 The first experiment is designed to illustrate the convergence behavior predicted by Theorems \ref{thm:LLN} and \ref{thm:normality-gen-erade}. We consider a three-treatment setting (\(K=3\)) with Bernoulli arms with success probabilities $\Theta=(0.5, 0.6, 0.8)$, and use the Neyman allocation as the target, defined as
-\[\rho_k^N(\Theta) = \frac{\sqrt{\theta_k(1-\theta_k)}}{\sum_{\ell=1}^{K}\sqrt{\theta_{\ell}(1-\theta_{\ell})}}\;.\]
+\[\rho_k^N(\Theta) := \frac{\sqrt{\theta_k(1-\theta_k)}}{\sum_{\ell=1}^{K}\sqrt{\theta_{\ell}(1-\theta_{\ell})}}\;.\]
 For two-arms the Neyman allocation (\cite{neyman1934representative}) is the one minimizing the variance of the estimator of the treatment difference as shown in \cite{melfi1998variablility}, and its natural extension to $K$ arms can be traced back to \cite{Cochran1977}.
 
 Figures \ref{fig:fixed-tgt-prop} and \ref{fig:fixed-tgt-plugin} respectively  display  the evolution of the absolute errors $|N_{n,k}/n - v_k|$ and $|\hat{\rho}_{n,k} - v_k|$ as a function of $n$, for the three example of $\alpha$RTS design discussed in Section~\ref{sec:alpha-rts}: Distance-Based, ERADE 2025 and Interpolated D-Tracking. Across all treatments, both quantities decrease rapidly as the sample size increases, indicating that the allocation proportions track the target allocation and that the plug-in estimator stabilizes. This behavior is consistent with the almost sure convergence results  implied by Theorems \ref{thm:LLN} and \ref{thm:normality-gen-erade}. While all three designs share the same asymptotic guarantees, we observe minor differences in early-stage variability. The D-Tracking rule exhibits larger fluctuations at small sample sizes, due to its more aggressive reallocation strategy, whereas the distance-based and ERADE-type rules yield smoother trajectories. These differences vanish as $n$ increases, and all methods display similar behavior in later stages.
@@ -71,7 +70,7 @@ Figures \ref{fig:fixed-tgt-prop} and \ref{fig:fixed-tgt-plugin} respectively  di
 	\label{fig:fixed-tgt-plugin}
 \end{figure}
 
-\subsection{The Impact of Forced Exploration} Our second experiments aims at illustrating the impact of forced exploration when the target allocation is sparse.
+\subsection{The Impact of Forced Exploration} Our second experiment aims at illustrating the impact of forced exploration when the target allocation is sparse.
 The work of \cite{tymofyeyev2007implementing} proposes a family of target allocations in multi-treatment Bernoulli experiments that are motivated by homogeneity tests, that is, testing
 the equality of treatment success probabilities across all arms. In this work, we consider the allocation that minimizes the sample size given a constraint on the power of the homogeneity test (which can be related to a constraint on the non-centrality parameter of some chi-square distribution). This target allocation is shown to exhibit a sparsity pattern for a wide range of parameter configurations. In particular, if $\Theta$ is such that
 \[\theta_1=\cdots=\theta_s
@@ -81,7 +80,7 @@ the equality of treatment success probabilities across all arms. In this work, w
 \theta_{K-g+1}=\cdots=\theta_K ,\]
 then
 \[
-\rho_i^T(\Theta)=
+\rho_i^T(\Theta):=
 \begin{cases}
 	\displaystyle
 	\frac{\sqrt{\theta_1 (1 - \theta_1)}}
@@ -172,18 +171,7 @@ treatments lead to a faster convergence to a sparse target allocation.
 
 \subsection{Hypothesis Testing with $\alpha$RTS} The asymptotic properties established for $\alpha$RTS(-FE) make these adaptive data collection methods compatible with asymptotic inference. To complement these asymptotic results, our last set of experiments focuses on the finite-time performance of an hypothesis test performed when the data is collected with $\alpha$RTS. We consider $K$ Bernoulli arms and the homogeneity test already mentioned above:
 \[\mathcal{H}_0 : \{\forall k \in [K] : \theta_k = \theta_1 \} \ \ \text{ against } \ \ \ \mathcal{H}_1 : \{\exists i,j :  \theta_i \neq \theta_j\}\;.\]
-The following lemma leads to an asymptotic calibration of a chi-square test.
-
-\begin{lemma}\label{lem:pearson}
-		Define the quantities \(S_{n,k} := N_{n,k} \hat{\theta}_{n,k}\) and 
-		\(\tilde{\theta}_n := \sum_{k=1}^K \frac{N_{n,k}}{n} \hat{\theta}_{n,k}\).	
-		Consider a RAR procedure under which \(N_{n,k} \to +\infty\), then the Pearson Chi-square statistic \(\mathcal{X}_n := \sum_{k=1}^K \frac{\left(S_{n,k} - N_{n,k}\tilde{\theta}_n\right)^2}{N_{n,k}\tilde{\theta}_n (1 - \tilde{\theta}_n)}\)
-		satisfies
-		\(\mathcal{X}_n \xrightarrow{\mathcal{D}} \chi^2_{K-1}\) under the null hypothesis.
-	\end{lemma}
-	\begin{remark}
-		Lemma \ref{lem:pearson} is valid for all \(\alpha\)RTS designs when Condition \hyperlink{CB}{\textbf{B}} is verified, and also for \(\alpha\)RTS-FE designs.
-\end{remark}
+Lemma~\ref{lem:pearson} provides the asymptotic calibration of the Pearson statistic \(\mathcal X_n\) for this test.
 
 {Hence, the test that rejects $\mathcal{H}_0$ if $\mathcal{X}_n$ exceeds the quantile of order 0.95 of a chi-square distribution with $K-1$ degrees of freedom is asymptotically a level-$0.05$ test.} We now evaluate its finite-sample performance for different targeting strategies in the $\alpha$RTS family and different target allocations, on some instances with $K=4$ arms.
 

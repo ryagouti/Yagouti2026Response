@@ -14,6 +14,10 @@
 \usepackage{subcaption}
 \usepackage{float}
 \usepackage{thmtools}
+\usepackage{xcolor}
+% Change either color to black to display that revision color in black.
+\colorlet{revisionred}{red}
+\colorlet{revisiongreen}{green!35!black}
 \usepackage[colorlinks=true,
 linkcolor=blue,
 citecolor=blue,
@@ -39,12 +43,12 @@ urlcolor=blue]{hyperref}
 \title{On Response-Adaptive Targeting Strategies for Multi-Treatment Experiments}
 \author{
 	\textbf{Redouane Yagouti}\\
-	Univ. Lille, Inria,  CNRS, Centrale Lille\\ 
+	Univ. Lille, Inria,  CNRS, Centrale Lille\\
 	UMR 9189-CRIStAL, France\\
 	\texttt{redouane.yagouti@inria.fr}
 	\and
 	\textbf{Rémy Degenne}\\
-	Univ. Lille, Inria,  CNRS, Centrale Lille\\ 
+	Univ. Lille, Inria,  CNRS, Centrale Lille\\
 	UMR 9189-CRIStAL, France\\
 	\texttt{remy.degenne@inria.fr}
 	\and
@@ -57,54 +61,54 @@ urlcolor=blue]{hyperref}
 \date{\today}
 
 \begin{document}
-	
+
 	\maketitle
-	
-	\begin{abstract}		
+
+	\begin{abstract}
 		\input{sections/abstract.tex}
 	\end{abstract}
-	
+
 	\section{Introduction}
-	\input{sections/introduction_emilie.tex}
-	
-	
+	\input{sections/01introduction_emilie.tex}
+
+
 	\section{Model, Notation, and Assumptions}\label{sec:notations}
-	\input{sections/model_and_assumptions.tex}
-	
+	\input{sections/02model_and_assumptions.tex}
+
 	\section{$\alpha$-Rebalancing Targeting Strategy (\(\alpha\)RTS)}\label{sec:alpha-rts}
-	\input{sections/general_adaptive_design.tex}
+	\input{sections/03general_adaptive_design.tex}
 	\input{sections/proof_sketch_emilie.tex}
-	
+
 	\section{$\alpha$RTS with Forced Exploration ($\alpha$RTS-FE)}\label{sec:alpha-rts-fe}
-	\input{sections/forced_exploration.tex}
-	
+	\input{sections/04forced_exploration.tex}
+
 	\section{Simulation study}\label{sec:simulation}
 	\input{sections/simulation_parent.tex}
-	
+
 	\section{Conclusion}\label{sec:conclusion}
 	In this paper, we introduced a unified theoretical framework for response-adaptive targeting in multi-treatment experiments. Rather than focusing on a specific allocation rule, we defined a broad class of adaptive designs, the $\alpha$RTS family, encompassing several existing procedures while allowing for new algorithmic variations.
-	
+
 	We established that all designs within this class share the same fundamental asymptotic properties, including strong consistency, asymptotic normality of both estimators and allocation proportions, and asymptotic efficiency. A key insight of our analysis is that these properties are structural and do not depend on the specific form of the allocation rule within the class. To address sparse target regimes, we proposed a forced-exploration extension and showed that it preserves the asymptotic guarantees while ensuring sufficient sampling of all treatments. Our simulation results illustrate that, while different designs may exhibit distinct finite-sample behaviors, they remain asymptotically equivalent, and highlight the importance of forced exploration in sparse settings.
-	
+
 	Overall, our work provides a flexible and robust foundation for designing and analyzing response-adaptive procedures in multi-arm trials.
-	
+
 	\subsection*{Acknowledgments}
 		The PhD of Redouane Yagouti is founded by an Inria Action Exploration grant called BETA-3$K$. The authors acknowledge Sof\'ia Villar and Lukas Pin for interesting discussions on Response Adaptive Randomization.
 
 	\bibliographystyle{plainnat}
 	\bibliography{references}
-	
+
 	\newpage
 	\begin{appendix}
 		\section{Supporting Proofs for $\alpha$RTS}\label{appnA}
 		\input{sections/appendixA.tex}
-		
+
 		\section{Supporting Proofs for $\alpha$RTS-FE}\label{appnB}
 		\input{sections/appendixB.tex}
-		
+
 		\section{Technical Lemmas}\label{appnC}
 		\input{sections/appendixC.tex}
 	\end{appendix}
-	
-	
+
+
 \end{document}

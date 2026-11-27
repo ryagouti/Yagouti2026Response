@@ -1,192 +1,592 @@
+{\color{revisiongreen}
+{\color{green!35!black}Throughout this appendix, we consider an \(\alpha\)RTS-FE design with forced-exploration threshold \(h\) as in Definition~\ref{def:rts-fe-def}. Lemma~\ref{lem:generic-two-stage} is stated more generally for a RAR procedure.}
 
-\subsection{Proof of Theorem \ref{thm:forced}}
-In this part we redefine the last hitting time $\ell_{n,k}$ for \(\alpha\)RTS-FE designs family as follow
-\begin{equation}\label{eq:stopping-time-def-fe}
-	\ell_{n,k} := \max \left\{\, m \leq n : \frac{N_{m,k}}{m} \leq \hat{\rho}_{m,k} \text{ or } \left(k \in arg\!\min_{j \in U_m} N_{m,j}\text{ and } \mathbf{U}_m \neq \emptyset\right) \,\right\}
-\end{equation}
+\subsection{\texorpdfstring{$\alpha$RTS-FE}{alpha RTS-FE} with non-sparse target allocations}\label{appnB:nonsparse}
 
-We prove below that the conditions in Lemma~\ref{lem:generic-conditions-main} are valid for any design in the \(\alpha\)RTS-FE family and for the last hitting time defined as in \eqref{eq:stopping-time-def-fe}, which preserves the results of all Theorems for their counterparts without forced exploration.
+{\color{revisiongreen}To prove Theorem~\ref{thm:forced}, we verify the conditions of Lemma~\ref{lem:generic-conditions-main} for the RTS-FE last hitting times. Our initial estimate is, as we will see later in following lemmas
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq Km_0+h(n)=o(n).
+\]
+Since \(h(n)\) may grow faster than \(\sqrt n\), this estimate does not, in general, give the \(o(\sqrt n)\) bound required by Lemma~\ref{lem:generic-conditions-main}. We therefore proceed in two stages. First, we show that the weaker \(o(n)\) bound is sufficient for consistency. Since the limiting allocation proportions are positive, forced exploration is eventually inactive. We then use this inactivity to strengthen the last-hitting-time bound to \(O(1)\) almost surely. The three conditions of Lemma~\ref{lem:generic-conditions-main} consequently hold, yielding the conclusions of Theorems~\ref{thm:LLN} and~\ref{thm:normality-gen-erade}.
 
-\begin{lemma}\label{lem:preliminary2}
-	For any \(k \in [K]\) we have the following results
-	\begin{enumerate}[label=(\roman*)]
-		\item \(\left(\ell_{n,k}\right)_{n \geq 1}\) is a non-decreasing sequence and \(\forall n \in \mathbb{N}: \,\ell_{n,k} \leq n\)
-		\item for all $k\in [K]$, $n \in \mathbb{N}$,\begin{equation}\label{eq:prelim-4}
-			N_{n,k} - n\hat{\rho}_{n,k} \leq 1+N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k} + U_{n,k} - U_{\ell_{n,k},k}
-		\end{equation}
-		\item for all $k\in [K]$, $n \in \mathbb{N}$,
-		\begin{equation}\label{eq:condition}
-			N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k} \leq o(\sqrt{n}), \ a.s.
-			\quad
-		\end{equation}
-	\end{enumerate}
+We first establish consistency under the weaker \(o(n)\) bound.}
+
+{\color{revisiongreen}\begin{lemma}[Consistency under a weaker last-hitting-time bound]\label{lem:generic-two-stage}
+Assume Conditions~\hyperlink{CA}{\textbf{A}} and~\hyperlink{CB}{\textbf{B}}. Consider a RAR procedure for which there exist non-negative random variables \(\ell_{n,k}\) such that, for every \(k\in[K]\), \((\ell_{n,k})_{n\geq1}\) is non-decreasing, \(\ell_{n,k}\leq n\), and
+\[
+N_{n,k}-n\hat\rho_{n,k}
+\leq 1+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
++U_{n,k}-U_{\ell_{n,k},k}.
+\]
+If, for every \(k\in[K]\),
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq o(n)\qquad\text{a.s.},
+\]
+then \(N_{n,k}/n\to v_k>0\) almost surely for every \(k\in[K]\).
 \end{lemma}
+\begin{proof}
+As in Appendix~\ref{proof:thm1}, Conditions~\hyperlink{CA}{\textbf{A}} and~\hyperlink{CB}{\textbf{B}} give \(\hat\rho_n\to u\in(0,1)^K\) almost surely. The martingale strong law and the definition of \(U_{n,k}\) then yield
+\[
+\frac{U_{n,k}}{n}\longrightarrow -(1-\alpha)u_k\qquad\text{a.s.}
+\]
+Since \((\ell_{n,k})_{n\geq1}\) is non-decreasing and \(\ell_{n,k}\leq n\), Lemma~\ref{lem:convergence} implies
+\[
+\left(\frac{U_{n,k}-U_{\ell_{n,k},k}}{n}\right)^+
+\longrightarrow0\qquad\text{a.s.}
+\]
+Dividing the allocation inequality by \(n\) and using the assumed bound gives
+\[
+\frac{N_{n,k}}n-\hat\rho_{n,k}
+\leq \frac1n+
+\frac{N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}}n
++\frac{U_{n,k}-U_{\ell_{n,k},k}}n.
+\]
+Consequently,
+\[
+\left(\frac{N_{n,k}}n-\hat\rho_{n,k}\right)^+
+\leq
+\left(\frac{U_{n,k}-U_{\ell_{n,k},k}}n\right)^+
++o(1)\longrightarrow0\qquad\text{a.s.}
+\]
+The remainder of the consistency argument in Appendix~\ref{proof:thm1} then gives \(N_{n,k}/n\to v_k>0\) almost surely for every \(k\in[K]\).
+\end{proof}}
 
-\begin{proof}[Proof of Lemma \ref{lem:preliminary2}]
-	Consider \(\ell_{n,k}\) as defined in \eqref{eq:stopping-time-def-fe}, we have
-	\begin{enumerate}[label=(\roman*)]
-		\item Obvious from definition.
-		\item Let \(k \in [K]\), if \(m \geq \ell_{n,k} + 1\) then
+{\color{revisiongreen}We next show that positive limiting allocation proportions make forced exploration eventually inactive.}
+
+\begin{lemma}[Inactivity of forced exploration]\label{lem:fe-inactivity}
+Let \(\mathbf U_m\) be defined as in Definition~\ref{def:rts-fe-def}. Assume that \(h(n)=o(n)\) and, for every \(k\in[K]\),
+\[
+\frac{N_{n,k}}n\xrightarrow{\mathrm{a.s.}}v_k>0.
+\]
+Then there exists an almost surely finite random time \(T\) such that
+\[
+\mathbf U_m=\varnothing\qquad\text{for every }m\geq T,
+\qquad\text{a.s.}
+\]
+\end{lemma}
+\begin{proof}
+Let
+		\(
+		\Omega_0
+		:=
+		\bigcap_{k=1}^K
+		\left\{
+		\frac{N_{m,k}}{m}\to v_k
+		\right\}.
+		\)
+		Fix $\omega\in\Omega_0$, since $v_k>0$ for every
+		$k\in[K]$, define
 		\[
-		\frac{N_{m,k}}{m} > \hat{\rho}_{m,k} \text{ and } \left\{k \notin arg\!\min_{j \in U_m} N_{m,j}\text{ or } \mathbf{U}_m = \emptyset\right\}
+		v_{\min}:=\min_{k\in[K]}v_k>0,
+		\qquad
+		c:=\frac{\min_{k\in[K]}v_k}{2}>0.
 		\]
-		If \(\mathbf{U}_m \neq \emptyset\) then \(k \notin arg\!\min_{j \in U_m} N_{m,j}\), so \(p_{m+1,k} = 0\) following \eqref{eq:fe-phase} . Otherwise if \(\mathbf{U}_m = \emptyset\) then \(p_{m+1,k} \leq \alpha \hat{\rho}_{m,k}\) following \eqref{eq:fe-phase}, so the result follows using the same arguments as in the previous case.
-		\item At \(m = \ell_{n,k}\), if \(\frac{N_{\ell_{n,k},k}}{\ell_{n,k}} \leq \hat{\rho}_{\ell_{n,k},k}\) then \(	N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k} \leq 0
-		\),
-		otherwise if \(\mathbf{U}_{\ell_{n,k}} \neq \emptyset\) and \(k \in arg\!\min_{j \in \mathbf{U}_{\ell_{n,k}}} N_{\ell_{n,k},j}\), then for \(a \in \mathbf{U}_{\ell_{n,k}}\) we have
-		\begin{align*}
-			N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k}
-			&\leq N_{\ell_{n,k},k}\\
-			&\leq N_{\ell_{n,k},a}\\
-			&\leq h(\ell_{n,k})
-		\end{align*}
-		So either way \(N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k} \leq o(\sqrt{n}) \quad \text{a.s.}\)
-	\end{enumerate}
+		
+		For every $k\in[K]$, since
+		\(\frac{N_{m,k}(\omega)}{m}\to v_k>c,\)
+		there exists a finite integer $T_k(\omega)$ such that
+		\[
+		\forall m\ge T_k(\omega):
+		\quad
+		\frac{N_{m,k}(\omega)}{m}>c.
+		\]
+		On the other hand, since $h(m)=o(m)$,
+		there exists a finite deterministic integer $T_2$ such that
+		\[
+		\forall m\ge T_2
+		:\quad
+		h(m)<cm,
+		\]
+		
+		Define
+		\(
+		T(\omega):=\max\left\{\max_{k\in[K]}T_k(\omega),T_2\right\}.
+		\)
+		Then $T(\omega)<\infty$, and for every $m\ge T(\omega)$ and every
+		$k\in[K]$,
+		\[
+		N_{m,k}(\omega)>cm>h(m).
+		\]
+		Therefore
+		\(
+		\mathbf{U}_m(\omega)
+		=
+		\{k\in[K]:N_{m,k}(\omega)\le h(m)\}
+		=
+		\varnothing.
+		\) Since $\mathbb{P}(\Omega_0)=1$, we conclude the claim.
 \end{proof}
 
+We now prove Lemma~\ref{lem:fe-two-stage} by verifying the conditions of Lemma~\ref{lem:generic-conditions-main} for the RTS-FE last hitting times.
+
+\begin{proof}[Proof of Lemma~\ref{lem:fe-two-stage}]
+The sequence \((\ell_{n,k})_{n\geq1}\) is non-decreasing and bounded above by \(n\) by definition. If \(m\geq\ell_{n,k}+1\), then
+\[
+\frac{N_{m,k}}m>\hat\rho_{m,k},
+\qquad
+\mathbf U_m=\varnothing\ \text{or}\ k\notin\mathbf S_m.
+\]
+When \(\mathbf U_m\ne\varnothing\), the forced-exploration rule gives \(p_{m+1,k}=0\); otherwise, \(p_{m+1,k}\leq\alpha\hat\rho_{m,k}\). The same argument as in Lemma~\ref{lem:preliminary} therefore gives the stated allocation inequality.
+
+At \(m=\ell_{n,k}\), under-allocation gives
+\(N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}\leq0\).
+If instead \(k\in\mathbf S_{\ell_{n,k}}\) and \(\mathbf U_{\ell_{n,k}}\ne\varnothing\), then
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq N_{\ell_{n,k},k}
+\leq h(\ell_{n,k})\leq h(n).
+\]
+The initial stages contribute at most \(Km_0\). Thus the upper bound is \(Km_0+h(n)=o(n)\), and Lemma~\ref{lem:generic-two-stage} gives consistency.
+
+By consistency, \(N_{n,k}/n\to v_k>0\) almost surely for every \(k\in[K]\). Lemma~\ref{lem:fe-inactivity} therefore gives an almost surely finite \(T\) such that \(\mathbf U_m=\varnothing\) for every \(m\geq T\). Enlarge \(T\), if necessary, so that \(T\geq Km_0+1\).
+
+Fix \(k\in[K]\). We distinguish two cases.
+\begin{itemize}
+\item If \(\ell_{n,k}\geq T\), then \(\mathbf U_{\ell_{n,k}}=\varnothing\), so the definition of \(\ell_{n,k}\) implies
+\[
+\frac{N_{\ell_{n,k},k}}{\ell_{n,k}}\leq\hat\rho_{\ell_{n,k},k},
+\qquad
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}\leq0.
+\]
+\item If \(\ell_{n,k}<T\), then
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq N_{\ell_{n,k},k}\leq\ell_{n,k}<T.
+\]
+\end{itemize}
+Thus \(N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}\leq O(1)\) almost surely. Since \(O(1)=o(\sqrt n)\) almost surely, the third condition of Lemma~\ref{lem:generic-conditions-main} holds.
+\end{proof}
+
+}
+
+% {\color{revisiongreen} \begin{lemma}[Inactivity of forced exploration]\label{lem:fe-inactivity}
+% 	Assume that, for every $k\in[K]$,
+% 		\[
+% 		\frac{N_{m,k}}{m}\xrightarrow[m\to\infty]{a.s.} v_k,
+% 		\]
+% 		with $v_k>0$, and that
+% 		\(h(m)=o(m).\)
+% 		Then there exists an almost surely finite random time $T$ such that
+% 		\[
+% 		\mathbf{U}_m=\varnothing,
+% 		\qquad \forall m\ge T,
+% 		\qquad \text{a.s.}
+% 		\]
+% 	\end{lemma}
+	
+% 	\begin{proof}
+% 		Let
+% 		\(
+% 		\Omega_0
+% 		:=
+% 		\bigcap_{k=1}^K
+% 		\left\{
+% 		\frac{N_{m,k}}{m}\to v_k
+% 		\right\}.
+% 		\)
+% 		Fix $\omega\in\Omega_0$, since $v_k>0$ for every
+% 		$k\in[K]$, define
+% 		\[
+% 		v_{\min}:=\min_{k\in[K]}v_k>0,
+% 		\qquad
+% 		c:=\frac{\min_{k\in[K]}v_k}{2}>0.
+% 		\]
+		
+% 		For every $k\in[K]$, since
+% 		\(\frac{N_{m,k}(\omega)}{m}\to v_k>c,\)
+% 		there exists a finite integer $T_k(\omega)$ such that
+% 		\[
+% 		\forall m\ge T_k(\omega):
+% 		\quad
+% 		\frac{N_{m,k}(\omega)}{m}>c.
+% 		\]
+% 		On the other hand, since $h(m)=o(m)$,
+% 		there exists a finite deterministic integer $T_2$ such that
+% 		\[
+% 		\forall m\ge T_2
+% 		:\quad
+% 		h(m)<cm,
+% 		\]
+		
+% 		Define
+% 		\(
+% 		T(\omega):=\max\left\{\max_{k\in[K]}T_k(\omega),T_2\right\}.
+% 		\)
+% 		Then $T(\omega)<\infty$, and for every $m\ge T(\omega)$ and every
+% 		$k\in[K]$,
+% 		\[
+% 		N_{m,k}(\omega)>cm>h(m).
+% 		\]
+% 		Therefore
+% 		\(
+% 		\mathbf{U}_m(\omega)
+% 		=
+% 		\{k\in[K]:N_{m,k}(\omega)\le h(m)\}
+% 		=
+% 		\varnothing.
+% 		\) Since $\mathbb{P}(\Omega_0)=1$, we conclude the claim.
+% 	\end{proof}
+% }
+
+% {\color{revisiongreen}
+% \begin{lemma}[Bound at the last hitting time]\label{lem:fe-last-hitting-bound}
+% Under the assumptions of Lemma~\ref{lem:fe-inactivity}, let \(\ell_{n,k}\) be defined by \eqref{eq:stopping-time-def-fe}. Then, for every \(k\in[K]\),
+% \[
+% N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}\leq O(1)
+% \qquad\text{a.s. as }n\to\infty.
+% \]
+% \end{lemma}
+% \begin{proof}
+% 		Fix an arm $k \in [K]$. Let $T<\infty$ be the a.s. finite time given by Lemma~\ref{lem:fe-inactivity}, i.e.
+% 		\[
+% 		\mathbf{U}_m=\varnothing,
+% 		\qquad \forall m\ge T,
+% 		\qquad \text{a.s.}
+% 		\]
+% 		We distinguish two cases.
+		
+% 		\textbf{Case 1: $\ell_{n,k}\ge T$.}
+% 		In this case,
+% 		\[
+% 		U_{\ell_{n,k}}=\varnothing,
+% 		\]
+% 		so the second condition in the definition of $\ell_{n,k}$ cannot hold. Hence $\ell_{n,k}$ must satisfy the first condition, i.e.
+% 		\(	\frac{N_{\ell_{n,k},k}}{\ell_{n,k}}
+% 		\le
+% 		\hat\rho_{\ell_{n,k},k},
+% 		\)
+% 		which implies
+% 		\[
+% 		N_{\ell_{n,k},k}
+% 		-
+% 		\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+% 		\le 0.
+% 		\]
+		
+% 		\textbf{Case 2: $\ell_{n,k}<T$.}
+% 		In this case, trivially
+% 		\(
+% 		N_{\ell_{n,k},k}\le \ell_{n,k}<T,
+% 		\)
+% 		and then
+% 		\[
+% 		N_{\ell_{n,k},k}
+% 		-
+% 		\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+% 		\le
+% 		N_{\ell_{n,k},k}
+% 		\le T.
+% 		\]
+		
+% 		Combining the two cases, we obtain, for every $n$,
+% 		\[
+% 		N_{\ell_{n,k},k}
+% 		-
+% 		\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+% 		\le T.
+% 		\]
+		
+% 		Since $T<\infty$ almost surely, this proves
+% 		\(
+% 		N_{\ell_{n,k},k}
+% 		-
+% 		\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+% 		\le O(1)
+% 		\qquad \text{a.s.}
+% 		\)
+% \end{proof}}
 \subsection{$\alpha$RTS-FE with Sparse Allocations}\label{proofs:sparse-case}
+\subsubsection{Consistency and convergence rates}
+{\color{revisiongreen}We first establish a lower bound on the sample size of every arm. This bound ensures that all arms are sampled infinitely often and gives the estimator rate used in Theorem~\ref{thm:sparse-rate}.
+\begin{lemma}[Forced-exploration lower bound]
+		\label{lem:fe-lower-bound}
+		There exists $M\ge1$ such that, for every $n\ge M$ and $j\in[K]$,
+		\[
+		N_{n,j}\ge h\!\left(n-K\lceil h(n)\rceil-1\right).
+		\]
+	\end{lemma}
+	
+	\begin{proof}
+{\color{revisiongreen}
+Since \(h(n)=o(n)\), for sufficiently large \(n\) we may set
+\(
+m_n:=n-K\lceil h(n)\rceil-1\geq1.
+\)
+We proceed by contradiction, suppose that \(\exists j\in[K]\),
+\(N_{n,j}<\lceil h(m_n)\rceil\). Since \(h\) is non-decreasing, for every \(t\in\{m_n,\ldots,n-1\}\),
+\[
+N_{t,j}\leq N_{n,j}\leq\lceil h(m_n)\rceil-1
+<h(m_n)\leq h(t).
+\]
+Hence, for every \(t\in\{m_n,\ldots,n-1\}\),
+\(
+j\in\mathbf U_t\text{ and then }\mathbf U_t\ne\varnothing.
+\)
+By the forced-exploration rule, the selected arm \(A_{t+1}\) satisfies
+\[
+N_{t,A_{t+1}}=\min_{a\in\mathbf U_t}N_{t,a}
+\leq N_{t,j}<\lceil h(m_n)\rceil.
+\]
+Each arm can be selected at most \(\lceil h(m_n)\rceil\) times while its count is below this threshold. Therefore, using the monotonicity of \(h\),
+\[
+n-m_n\leq K\lceil h(m_n)\rceil\leq K\lceil h(n)\rceil.
+\]
+This contradicts \(n-m_n=K\lceil h(n)\rceil+1\). Consequently, the claim holds.}
+\end{proof}
+We use the lower bound to prove estimator consistency and its rate, then establish convergence of the allocation proportions.}
 
 \begin{proof}[Proof of Theorem \ref{thm:sparse-rate}]
-	We first prove that \(N_{n,k} \to +\infty\). Let us assume towards contradiction that
-	\[
-	\exists i \in [K],\ \exists M \in \mathbb{N},\ \exists N \in \mathbb{N}: \, \forall n \geq N:\ N_{n,i} = M
-	\]
-	As \(h(n) \to +\infty\) we can select \(N\) such that \(\forall n \geq N: \, h(n) \geq M \). Now consider \( n \geq N \), we have
-	\begin{align*}
-		N_{n,i} \leq h(n) 
-		& \Rightarrow \ i \in U_n \\
-		& \Rightarrow U_n \neq \emptyset \\
-		& \Rightarrow I_{n+1} \in \arg\min_{j \in U_n} N_j(n) \\
-		& \Rightarrow N_{n, I_{n+1}} \leq N_{n,i} = M
-	\end{align*}
-	Since \( I_{n+1} \) has been selected at round \( n+1 \), we have \(N_{n+1, I_{n+1}} = N_{n, I_{n+1}} + 1 \leq M + 1\), and for \( j \neq I_{n+1} \) we have \(N_{n+1,j} = N_{n,j}\). 
+	%{\color{revisionred} Let us assume towards contradiction that
+%		\[
+%		\exists i \in [K],\ \exists M \in \mathbb{N},\ \exists N \in \mathbb{N}: \, \forall n \geq N:\ N_{n,i} = M
+%		\]
+%		As \(h(n) \to +\infty\) we can select \(N\) such that \(\forall n \geq N: \, h(n) \geq M \). Now consider \( n \geq N \), we have
+%		\begin{align*}
+%			N_{n,i} \leq h(n) 
+%			& \Rightarrow \ i \in U_n \\
+%			& \Rightarrow U_n \neq \emptyset \\
+%			& \Rightarrow I_{n+1} \in \arg\min_{j \in U_n} N_j(n) \\
+%			& \Rightarrow N_{n, I_{n+1}} \leq N_{n,i} = M
+%		\end{align*}
+%		Since \( I_{n+1} \) has been selected at round \( n+1 \), we have \(N_{n+1, I_{n+1}} = N_{n, I_{n+1}} + 1 \leq M + 1\), and for \( j \neq I_{n+1} \) we have \(N_{n+1,j} = N_{n,j}\). 
+%		
+%		Now define \(D(n) := \sum_{j=1}^K \left(M + 1 - N_j(n)\right)^+\), then we have
+%		\begin{align*}
+%			D(n+1) - D(n)
+%			&= \sum_{j=1}^K \left(M + 1 - N_{n+1, j}\right)^+ 
+%			- \sum_{j=1}^K \left(M + 1 - N_{n,j}\right)^+ \\
+%			&= \left(M + 1 - N_{n+1, I_{n+1}}\right)^+ 
+%			- \left(M + 1 - N_{n, I_{n+1}}\right)^+ \\
+%			&= \left(M - N_{n, I_{n+1}}\right)^+ 
+%			- \left(M - N_{n, I_{n+1}} + 1\right)^+ \\
+%			&= -1.
+%		\end{align*}
+%		Thus \(D\left(n + D(n) + 1\right) = -1\) which is a contradiction as \(D \geq 0\). Therefore,
+%		\[
+%		\forall i \in [K], \quad N_{n,i} \xrightarrow[n\to\infty]{} +\infty.
+%		\]}
+	We first prove that \(N_{n,k} \to +\infty\). {\color{revisiongreen} From Lemma \ref{lem:fe-lower-bound} we proved that there exists \(M\geq 1\) such that, for every \(n \geq M\) and \(j \in [K]\) we have
+		\[
+		N_{n,j}\ge h\!\left(n-K\lceil h(n)\rceil-1\right)
+		\]
+		As \(n-K\lceil h(n)\rceil-1 = n-1 +o(n) \to +\infty\) and that \(h\!\left(n\right) \to +\infty\), we obtain that \(h\!\left(n-K\lceil h(n)\rceil-1\right)\xrightarrow[n\to\infty]{}+\infty\) and then
+		\[
+		\forall j \in [K], \quad N_{n,j} \xrightarrow[n\to\infty]{} +\infty.
+		\]}
 	
-	Now define \(D(n) := \sum_{j=1}^K \left(M + 1 - N_j(n)\right)^+\), then we have
-	\begin{align*}
-		D(n+1) - D(n)
-		&= \sum_{j=1}^K \left(M + 1 - N_{n+1, j}\right)^+ 
-		- \sum_{j=1}^K \left(M + 1 - N_{n,j}\right)^+ \\
-		&= \left(M + 1 - N_{n+1, I_{n+1}}\right)^+ 
-		- \left(M + 1 - N_{n, I_{n+1}}\right)^+ \\
-		&= \left(M - N_{n, I_{n+1}}\right)^+ 
-		- \left(M - N_{n, I_{n+1}} + 1\right)^+ \\
-		&= -1.
-	\end{align*}
-	Thus \(D\left(n + D(n) + 1\right) = -1\) which is a contradiction as \(D \geq 0\). Therefore,
+		
+	From the result above we have that \(\hat{\theta}_{n,k}-\theta_k \to 0\) using the law of large numbers. Additionally, by using the Law of Iterated Logarithm for martingales we obtain that, for all \(k \in [K]\),
+	{\color{revisiongreen} \[\hat{\theta}_{n,k} - \theta_k = O\left(\sqrt{\frac{\log\log(N_{n,k})}{N_{n,k}}}\right) \quad a.s.\]}
+	
+	{\color{revisiongreen}
+Since \(K\) is fixed, the componentwise bounds imply
+\[
+\|\hat\Theta_n-\Theta\|^2
+=\sum_{k=1}^K|\hat\theta_{n,k}-\theta_k|^2
+=O\!\left(\max_{k\in[K]}\frac{\log\log N_{n,k}}{N_{n,k}}\right)
+\qquad\text{a.s.}
+\]
+By Lemma~\ref{lem:fe-lower-bound}, eventually
+\(h(n-K\lceil h(n)\rceil-1)\leq N_{n,k}\leq n\) for every \(k\). Consequently,
+\[
+\|\hat\Theta_n-\Theta\|^2
+=O\!\left(\frac{\log\log n}{h\!\left(n-K\lceil h(n)\rceil-1\right)}\right)
+\qquad\text{a.s.},
+\]
+which gives the stated vector rate.
+
+By continuity of \(\rho\), \(\hat\rho_n\to v\) almost surely. The RTS-FE last-hitting-time inequality and the bound \(N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}\leq Km_0+h(n)=o(n)\) therefore give
 	\[
-	\forall i \in [K], \quad N_{n,i} \xrightarrow[n\to\infty]{} +\infty.
+	\frac{N_{n,k}}n-\hat\rho_{n,k}
+	\leq o(1)+\frac{U_{n,k}-U_{\ell_{n,k},k}}n
+	\qquad\text{a.s.}
 	\]
-	From the result above we have that \(\hat{\theta}_{n,k}-\theta_k \to 0\) using the law of large numbers. Additionally, by using the Law of Iterated Logarithm for martingales we obtain that
-	\[\hat{\Theta}_n - \Theta = O\left(\sqrt{\frac{\log\log(N_{n,k})}{N_{n,k}}}\right) \quad a.s.\]
-	In the same spirit of the proof of Theorem \ref{thm:LLN}, we use the continuity of \(\rho\) and Lemma \ref{lem:convergence} to obtain that \(\lim\limits_{n \to +\infty} \frac{N_{n,k}}{n} = \lim\limits_{n \to +\infty} \hat{\rho}_{n,k} = v_k\)
+	The martingale strong law yields \(U_{n,k}/n\to-(1-\alpha)v_k\) almost surely, so Lemma~\ref{lem:convergence} implies that the positive part of the right-hand side tends to zero. Since \(N_n/n\) and \(\hat\rho_n\) are probability vectors, it follows that
+	\(
+	\frac{N_{n,k}}n-\hat\rho_{n,k}\longrightarrow0,
+	\text{ and then }\frac{N_{n,k}}n\longrightarrow v_k
+	\qquad\text{a.s.}
+	\)}
+\end{proof}
+\subsubsection{Sample sizes of sparse arms}
+{\color{revisiongreen}To apply the componentwise CLT, we need a deterministic sampling scale for each arm. We first bound the estimated target of a sparse arm, then use that bound to study its sample size.
+	\begin{lemma}[Decay of the estimated sparse target]
+		\label{lem:sparse-target-decay}
+		Assume Condition~\hyperlink{CA}{\textbf{A}} and that \(\rho\) is continuous at \(\Theta\). Let $k$ be a sparse arm, i.e., $\rho_k(\Theta)=0$, and assume that
+		$\rho_k$ is $C^2$ in a neighborhood of $\Theta$. Then
+		\[
+		\widehat\rho_{n,k}
+		=O\!\left(\frac{\log\log n}{h\!\left(n-K\lceil h(n)\rceil-1\right)}\right)
+		\qquad \text{a.s.}
+		\]
+	\end{lemma}
+	
+	\begin{proof}
+		Since $\rho_k\geq0$ and $\rho_k(\Theta)=0$, $\Theta$ is a local
+		minimum of $\rho_k$, hence $\nabla\rho_k(\Theta)=0$. By a second-order
+		Taylor expansion, there exist $C>0$ and a neighborhood of $\Theta$
+		such that
+		\[
+		\rho_k(x)\leq C\|x-\Theta\|^2.
+		\]
+		Since $\widehat\Theta_n\to\Theta$ a.s., eventually
+		\[
+		\widehat\rho_{n,k}
+		=\rho_k(\widehat\Theta_n)
+		\leq C\|\widehat\Theta_n-\Theta\|^2.
+		\]		
+		By Theorem~\ref{thm:sparse-rate},
+		\[
+		\|\hat\Theta_n-\Theta\|^2
+		=O\!\left(\frac{\log\log n}{h\!\left(n-K\lceil h(n)\rceil-1\right)}\right)
+		\qquad\text{a.s.}
+		\]
+		Therefore, the claim is proved.		
+	\end{proof}
+	\sparsestability*	
+	\begin{proof}
+{\color{revisiongreen}
+Fix a sparse arm \(k\). We prove an upper and a lower bound for \(N_{n,k}/h(n)\). By Lemma~\ref{lem:sparse-target-decay} and Condition~\hyperlink{CC}{\textbf{C}},
+\[
+\hat\rho_{n,k}=O\!\left(\frac{\log\log n}{h(n)}\right)
+=o\!\left(\frac{h(n)}n\right)\qquad\text{a.s.}
+\]
+The last step uses \(n\log\log n=o(h(n)^2)\). Thus there is an almost surely finite time \(T\) such that \(m\hat\rho_{m,k}<h(m)\) for every \(m\geq T\). If \(\ell_{n,k}\geq T\), its definition gives either
+\[
+N_{\ell_{n,k},k}\leq\ell_{n,k}\hat\rho_{\ell_{n,k},k}<h(\ell_{n,k}),
+\]
+or \(k\in\mathbf S_{\ell_{n,k}}\subseteq\mathbf U_{\ell_{n,k}}\), so that
+\[
+N_{\ell_{n,k},k}\leq h(\ell_{n,k}).
+\]
+In both cases, \(N_{\ell_{n,k},k}\leq h(n)\), since \(h\) is non-decreasing. If \(\ell_{n,k}<T\), then \(N_{\ell_{n,k},k}\leq\ell_{n,k}<T\leq h(n)\) for all sufficiently large \(n\), since \(h(n)\to\infty\). Therefore, for sufficiently large \(n\),
+\[
+N_{\ell_{n,k},k}\leq h(n)\qquad\text{a.s.}
+\]
+When \(\ell_{n,k}<n\), for \(\ell_{n,k}<m<n\), we have 
+\(
+p_{m+1,k}\leq\alpha\hat\rho_{m,k}
+\), so using \(X_{m+1,k}=p_{m+1,k}+M_{m+1,k}-M_{m,k}\), we obtain, 
+\[
+N_{n,k} = N_{\ell_{n,k},k}+X_{\ell_{n,k}+1,k}+\sum_{m=\ell_{n,k}+1}^{n-1}X_{m+1,k}
+\leq h(n)+1+\alpha\sum_{m=\ell_{n,k}+1}^{n-1}\hat\rho_{m,k}
++M_{n,k}-M_{\ell_{n,k}+1,k}.
+\]
+If \(\ell_{n,k}=n\), the bound \(N_{n,k}\leq h(n)\) already holds.
+
+To control the remaining terms, Condition~\hyperlink{CC}{\textbf{C}} gives \(h(m)\geq\sqrt{m\log\log m}\) eventually. Consequently,
+\[
+\sum_{m=1}^{n}\hat\rho_{m,k}
+=O\!\left(1+\sum_{m=3}^{n}\sqrt{\frac{\log\log m}{m}}\right)
+=O\!\left(\sqrt{n\log\log n}\right)=o(h(n))
+\qquad\text{a.s.}
+\]
+For \(\ell_{n,k}<n\), the martingale LIL gives
+\[
+M_{n,k}-M_{\ell_{n,k}+1,k}
+=O\!\left(\sqrt{n\log\log n}\right)=o(h(n))
+\qquad\text{a.s.}
+\]
+Therefore \(N_{n,k}\leq h(n)+1+o(h(n))\), and
+\[
+\limsup_{n\to\infty}\frac{N_{n,k}}{h(n)}\leq1
+\qquad\text{a.s.}
+\]
+ By Lemma~\ref{lem:fe-lower-bound} and Condition~\hyperlink{CC}{\textbf{C}},
+\[
+\liminf_{n\to\infty}\frac{N_{n,k}}{h(n)}
+\geq\lim_{n\to\infty}\frac{h(n-K\lceil h(n)\rceil-1)}{h(n)}=1
+\qquad\text{a.s.}
+\]
+Combining the two bounds proves the result.}
 \end{proof}
 
-%\begin{proof}[Proof of Theorem \ref{thm:componentwise}]
-%	This proof is based on the central limit theorem for martingales.
-%	
-%	\textbf{Step 1. Defining the martingale.}
-%	
-%	For \(k \in [K]\) we define \( Y_{i,k} = \xi_{i,k} - \theta_k \) and \(M_{n,k} = \sum_{i=1}^{n} X_{i,k} Y_{i,k}.\) So \(\{M_{n,k}\}_{n \geq 0}\) is a martingale as we have
+% \begin{proof}[Previous proof]
+
+% \end{proof}
+}
+
+\subsection{Asymptotic Distribution of the Pearson Test Statistic}\label{proof:pearson}
+%{\color{revisionred}
+%\begin{proof}[Previous proof]	
+%	Let \(Y_n := \left( \sqrt{N_{n,k}}(\hat{\theta}_{n,k} - \theta)\right)_{k \in [K]}\) and \(s_n:=\left(\sqrt{\omega_{n,k}}\right)_{k \in [K]}\) where \(\omega_{n,j}:=\frac{N_{n,j}}{n}\), then we rewrite \(\mathcal{X}_n = \frac{1}{\tilde{\theta}_n (1 - \tilde{\theta}_n)} 
+%	\sum_{k=1}^K N_{n,k} (\hat{\theta}_{n,k} - \tilde{\theta}_n)^2\)
+%	and we have
 %	\begin{align*}
-%		\mathbb{E}[\Delta M_{i,k} \mid \mathcal{F}_{i-1}] 
-%		&= \mathbb{E}[M_{i,k} - M_{i-1,k} \mid \mathcal{F}_{i-1}]\\
-%		&= \mathbb{E}[X_{i,k} Y_{i,k} \mid \mathcal{F}_{i-1}]\\
-%		&= X_{i,k} \, \mathbb{E}[Y_{i,k}]\\
-%		&= 0
+%		\sqrt{N_{n,k}} (\tilde{\theta}_n - \theta)
+%		&= \sqrt{N_{n,k}} \sum_{j=1}^K \omega_{n,j} (\hat{\theta}_{n,j} - \theta)\\
+%		&= \sqrt{\frac{N_{n,k}}{n}} \sum_{j=1}^K \sqrt{\omega_{n,j}}\sqrt{N_{n,j}} (\hat{\theta}_{n,j} - \theta)\\
+%		&= \sqrt{\omega_{n,k}} \sum_{j=1}^K \sqrt{\omega_{n,j}} \, [Y_n]_j
 %	\end{align*}
-%	The quadratic variation of \( \{M_{n,k}\}_{n \geq 0} \) can be expressed as:
+%	so 
 %	\begin{align*}
-%		\langle M_{.,k} \rangle_n &= \sum_{i=1}^{n} \mathbb{E}\left[ (\Delta M_i)^2 \mid \mathcal{F}_{i-1} \right]\\
-%		&= \sum_{i=1}^{n} \mathbb{E}\left[ X_{i,k} Y_{i,k}^2 \mid \mathcal{F}_{i-1} \right]\\
-%		&= \sum_{i=1}^{n} X_{i,k}\mathbb{E}\left[Y_{i,k}^2 \mid \mathcal{F}_{i-1} \right]\\
-%		&= \sigma_k^2 N_{n,k}
+%		\sqrt{N_{n,k}} (\hat{\theta}_{n,k} - \tilde{\theta}_n) &= \sqrt{N_{n,k}} (\hat{\theta}_{n,k} - \theta) 
+%		- \sqrt{N_{n,k}} (\tilde{\theta}_n - \theta)\\
+%		&= [Y_n - s_n s_n^\top Y_n]_k
 %	\end{align*}
-%	And for \(k \neq j \in [K]\) we have
-%	\[ \left<M_{.,k}, M_{.,j}\right>_n = \sum_{s=1}^{n} \mathbb{E}\left[\left(\xi_{s,k} - \theta_{k}\right)\left(\xi_{s,j} - \theta_{j}\right)\underbrace{X_{s,k}X_{s,j}}_{= 0}\mid \mathcal{F}_{s-1}\right] = 0\]	
-%	\textbf{Step 2. Lindeberg Condition for the martingale.}
-%
-%	Let $\varepsilon > 0$, we need to prove that for all \(k \in [K]\)
-%	\begin{equation*}
-%		L_{n,k}(\varepsilon) 
-%		:= \frac{1}{\langle M_{.,k} \rangle_n} 
-%		\sum_{i=1}^n 
-%		\mathbb{E}\!\left[
-%		(\Delta M_{i,k})^2 
-%		\mathbf{1}_{\{|\Delta M_{i,k}| > \varepsilon \sqrt{\langle M_{.,k} \rangle_n}\}}
-%		\mid \mathcal{F}_{i-1}
-%		\right]
-%		\overset{\mathbb{P}}{\longrightarrow} 0 
-%		\quad \text{as } n \to +\infty.
-%	\end{equation*}
-%	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	By dominated convergence theorem and the fact that $\mathbb{E}\!\left[ |Y_{1,k}|^{2} \right] < +\infty$ we have that 
-%	\[\mathbb{E}\!\left[Y_{1,k}^2  \mathbf{1}_{\{|Y_{1,k}| > t\}}
-%	\right] \underset{t \to +\infty}{\longrightarrow} 0\]
-%	For \(\eta > 0\), choose \(m := m(\eta)\) such that 
-%	\[
-%	\frac{1}{\sigma_k^2}
-%	\, \mathbb{E}\!\left[
-%	Y_{1,k}^2 
-%	\mathbf{1}_{\{|Y_{1,k}| > \varepsilon \sigma_k \sqrt{m}\}}
-%	\right] \leq \eta
-%	\]
-%	Now consider the event \(\left\{N_{n,k} \geq m\right\}\), we 
-%	have \(\mathbf{1}_{\{|Y_{1,k}| > \epsilon \sigma_k \sqrt{N_{n,k}}\}} \leq \mathbf{1}_{\{|Y_{1,k}| > \epsilon \sigma_k \sqrt{m}\}}\). So we have 	
-%	\begin{align*}
-%		L_{n,k}(\varepsilon)
-%		&\le 
-%		\frac{1}{\sigma_k^2 N_{n,k}} 
-%		\sum_{i=1}^n 
-%		X_{i,k} 
-%		\mathbb{E}\!\left[
-%		Y_{i,k}^2 
-%		\mathbf{1}_{\{|Y_{i,k}| > \varepsilon \sigma_k \sqrt{N_{n,k}}\}}
-%		\mid \mathcal{F}_{i-1}
-%		\right] \\
-%		&\leq 
-%		\frac{1}{\sigma_k^2}
-%		\, \mathbb{E}\!\left[
-%		Y_{1,k}^2 
-%		\mathbf{1}_{\{|Y_{1,k}| > \varepsilon \sigma_k \sqrt{m}\}}
-%		\right] \\
-%		&\leq \eta
-%	\end{align*}
-%	So \(\mathbb{P}\left(L_{n,k}(\epsilon) \leq \eta\right) \leq \mathbb{P}\left(N_{n,k} \leq m\right) \underset{n \to +\infty}{\longrightarrow} 0\)	
-%	.Therefore, the Lindeberg condition is verified, and by the martingale CLT theorem, we have:
-%	\begin{equation}\label{eq:martingale-clt}
-%		\frac{M_n}{\sqrt{\langle M \rangle_n}} 
-%		\overset{\mathcal{D}}{\longrightarrow} 
-%		\mathcal{N}(0,I_K)
-%	\end{equation}
-%	
-%	And we have from the estimator definition \(D_n\left(\hat{\Theta}_n - \Theta\right) = \Sigma^{1/2}\frac{M_n}{\sqrt{\langle M \rangle_n}}\), then using \eqref{eq:martingale-clt} we get
-%	\begin{equation*}
-%		D_n\left(\hat{\Theta}_n - \Theta\right)
-%		\overset{\mathcal{D}}{\longrightarrow} 
-%		\mathcal{N}(0,\Sigma)
-%	\end{equation*}
+%	then \(\mathcal{X}_n = \frac{1}{\tilde{\theta}_n (1 - \tilde{\theta}_n)} 
+%	Y_n^\top (I - s_n s_n^\top) Y_n\)
+%	, and we have from Lemma \ref{lem:componentwise} that \(\frac{1}{\sqrt{\theta(1-\theta)}} Y_n \xrightarrow{\mathcal{D}} \mathcal{N}(0, I_K)\) and from Theorem \ref{thm:LLN} we have \(\tilde{\theta}_n \to \theta\) and \(I - s_n s_n^\top \to I - s s^\top
+%	\) with \(s := (\sqrt{\nu_1}, \dots, \sqrt{\nu_K})\). So as $I - s s^\top$ is an orthogonal projection matrix with rank $K-1$, we obtain by Slutsky argument that \(\mathcal{X}_n \xrightarrow{\mathcal{D}} \chi^2_{K-1}\)
 %\end{proof}
-\subsection{Asymptotic Distribution of the Pearson Test Statistic}
-\begin{proof}[Proof of Lemma \ref{lem:pearson}]
-	Let \(Y_n := \left( \sqrt{N_{n,k}}(\hat{\theta}_{n,k} - \theta)\right)_{k \in [K]}\) and \(s_n:=\left(\sqrt{\omega_{n,k}}\right)_{k \in [K]}\) where \(\omega_{n,j}:=\frac{N_{n,j}}{n}\), then we rewrite \(\mathcal{X}_n = \frac{1}{\tilde{\theta}_n (1 - \tilde{\theta}_n)} 
-	\sum_{k=1}^K N_{n,k} (\hat{\theta}_{n,k} - \tilde{\theta}_n)^2\)
-	and we have
-	\begin{align*}
-		\sqrt{N_{n,k}} (\tilde{\theta}_n - \theta)
-		&= \sqrt{N_{n,k}} \sum_{j=1}^K \omega_{n,j} (\hat{\theta}_{n,j} - \theta)\\
-		&= \sqrt{\frac{N_{n,k}}{n}} \sum_{j=1}^K \sqrt{\omega_{n,j}}\sqrt{N_{n,j}} (\hat{\theta}_{n,j} - \theta)\\
-		&= \sqrt{\omega_{n,k}} \sum_{j=1}^K \sqrt{\omega_{n,j}} \, [Y_n]_j
-	\end{align*}
-	so 
-	\begin{align*}
-		\sqrt{N_{n,k}} (\hat{\theta}_{n,k} - \tilde{\theta}_n) &= \sqrt{N_{n,k}} (\hat{\theta}_{n,k} - \theta) 
-		- \sqrt{N_{n,k}} (\tilde{\theta}_n - \theta)\\
-		&= [Y_n - s_n s_n^\top Y_n]_k
-	\end{align*}
-	then \(\mathcal{X}_n = \frac{1}{\tilde{\theta}_n (1 - \tilde{\theta}_n)} 
-	Y_n^\top (I - s_n s_n^\top) Y_n\)
-	, and we have from Lemma \ref{lem:componentwise} that \(\frac{1}{\sqrt{\theta(1-\theta)}} Y_n \xrightarrow{\mathcal{D}} \mathcal{N}(0, I_K)\) and from Theorem \ref{thm:LLN} we have \(\tilde{\theta}_n \to \theta\) and \(I - s_n s_n^\top \to I - s s^\top
-	\) with \(s := (\sqrt{\nu_1}, \dots, \sqrt{\nu_K})\). So as $I - s s^\top$ is an orthogonal projection matrix with rank $K-1$, we obtain by Slutsky argument that \(\mathcal{X}_n \xrightarrow{\mathcal{D}} \chi^2_{K-1}\)
+%}
+
+{\color{revisiongreen}
+We now prove that the Pearson test statistic has a limiting chi-square distribution, as stated in Lemma~\ref{lem:pearson}.
+
+\begin{proof}[Proof of Lemma~\ref{lem:pearson}]
+Under \(\mathcal H_0\), set
+\[
+Z_n:=\left(\frac{\sqrt{N_{n,k}}(\hat\theta_{n,k}-\theta)}{\sqrt{\theta(1-\theta)}}\right)_{k\in[K]},
+\qquad s_n:=\left(\sqrt{N_{n,k}/n}\right)_{k\in[K]}.
+\]
+Lemma~\ref{lem:componentwise} gives \(Z_n\xrightarrow{\mathcal D}G\) where \(G \sim \mathcal N(0,I_K)\). Moreover,
+\[
+|\tilde\theta_n-\theta|\leq\max_k|\hat\theta_{n,k}-\theta|\to0\quad\text{a.s.},
+\qquad
+\mathcal X_n=\frac{\theta(1-\theta)}{\tilde\theta_n(1-\tilde\theta_n)}
+\|(I_K-s_ns_n^\top)Z_n\|^2.
+\]
+Define \(\bar s_n=(\sqrt{c_{n,k}/\sum_jc_{n,j}})_{k\in[K]}\) and \(P_n=I_K-\bar s_n(\bar s_n)^\top\). Since \(N_{n,k}/c_{n,k}\to1\) and \(\sum_kN_{n,k}=n\), we have \(\|s_n-\bar s_n\|\to0\) almost surely. Hence
+\[
+\mathcal X_n=\|P_nZ_n\|^2+o_p(1).
+\]
+By the Skorokhod representation theorem (\citealp[Theorem~6.7]{billingsley1999convergence}), there exist a probability space \((\widetilde\Omega,\widetilde{\mathcal F},\widetilde{\mathbb P})\) and random vectors \(\widetilde Z_n,\widetilde G\) on that space such that
+\[
+\widetilde Z_n\stackrel{\mathcal D}=Z_n,
+\qquad
+\widetilde G\stackrel{\mathcal D}=G,
+\qquad
+\widetilde Z_n\xrightarrow{\widetilde{\mathbb P}\text{-a.s.}}\widetilde G.
+\]
+For every \(n\), \(P_n\) is a deterministic orthogonal projection of rank \(K-1\), so
+\[
+\|P_n\widetilde G\|^2\sim\chi^2_{K-1},
+\qquad
+\|P_n\|_{\mathrm{op}}\leq1.
+\]
+Consequently,
+\[
+\left|\|P_n\widetilde Z_n\|^2-\|P_n\widetilde G\|^2\right|
+\leq\|\widetilde Z_n-\widetilde G\|
+\bigl(\|\widetilde Z_n\|+\|\widetilde G\|\bigr)
+\xrightarrow{\widetilde{\mathbb P}\text{-a.s.}}0.
+\]
+Since \(\|P_n\widetilde G\|^2\) has the same \(\chi^2_{K-1}\) distribution for every \(n\), Slutsky's lemma gives
+\[
+\|P_n\widetilde Z_n\|^2\xrightarrow{\mathcal D}\chi^2_{K-1}.
+\]
+As \(P_n\) is deterministic, \(\|P_n\widetilde Z_n\|^2\stackrel{\mathcal D}=\|P_nZ_n\|^2\), hence
+\[
+\|P_nZ_n\|^2\xrightarrow{\mathcal D}\chi^2_{K-1}.
+\]
+Finally, \(\mathcal X_n-\|P_nZ_n\|^2=o_p(1)\) and Slutsky's lemma yield
+\[
+\mathcal X_n\xrightarrow{\mathcal D}\chi^2_{K-1}.
+\]
 \end{proof}
+}
 
 

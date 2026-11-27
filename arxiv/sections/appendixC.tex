@@ -9,8 +9,9 @@
 	\end{align}
 \end{lemma}
 \begin{proof}
-	\begin{enumerate}[label=(\roman*)]
-		We first prove the first inequality, we have 
+    We prove the two inequalities in turn.
+    \begin{enumerate}[label=(\roman*)]
+        \item For \eqref{eq:A1}, we have
 		\begin{align}
 			\sup_{1 \le m \le L} |M_n - M_{n-m}| 
 			&\le \sup_{1 \le m \le L} |M_n - M_{n-L}| + |M_{n-m} - M_{n-L}|\\
@@ -53,7 +54,8 @@
 			&\leq \int_{0}^{2\sqrt{LC_0}}1 \dot dx + 4\int_{2\sqrt{LC_0}}^{+\infty}\frac{LC_0}{x^2} \dot dx = 4\sqrt{LC_0}
 		\end{align*}
 		
-		\item \begin{align*}
+		\item For \eqref{eq:A2}, a dyadic decomposition gives
+		\begin{align*}
 			\mathbb{E} \left[ \max_{L \leq m \leq n} \frac{|M_n - M_{n - m}|}{m} \right]
 			&\leq \sum_{\log_2(L) \leq j \leq \log_2(n)} 
 			\frac{1}{2^{j - 1}} \sqrt{2} \, \mathbb{E} \left[ 
@@ -91,30 +93,30 @@
 	This is precisely the definition of $X_n=O_p(u_n)$.
 \end{proof}
 
-\begin{lemma}\label{lem:chebychev-mart}
-	Suppose  \(\{X_n\}_{n \geq 1}\) is a square-integrable martingale with \(\mathbb{E}[X_1]=0\). Then for \(\lambda > 0\):
-	\[
-	\mathbb{P}\left(\sup_{1\leq i \leq n} X_i \geq \lambda\right)\leq \frac{\mathbb{V}ar(X_n)}{\mathbb{V}ar(X_n)+ \lambda^2}
-	\]
-\end{lemma}
-\begin{proof}
-	For \(\alpha > 0\) we have
-	\[
-	\mathbb{P}\left(\sup_{0 \leq k \leq n} X_k \geq c \right) = \mathbb{P}\left(\sup_{0 \leq k \leq n} (X_k + \alpha)^2 \geq (c+\alpha)^2 \right)
-	\]
-	As \(\{X_n\}\) is a martingale then \(\{X_n^2\}\) is a sub-martingale, so we can apply maximal Doob's inequality (see Theorem 12.4.2 in \cite{jf-le-gall}), which gives
+% \begin{lemma}\label{lem:chebychev-mart}
+% 	Suppose  \(\{X_n\}_{n \geq 1}\) is a square-integrable martingale with \(\mathbb{E}[X_1]=0\). Then for \(\lambda > 0\):
+% 	\[
+% 	\mathbb{P}\left(\sup_{1\leq i \leq n} X_i \geq \lambda\right)\leq \frac{\mathbb{V}ar\left[X_n\right]}{\mathbb{V}ar\left[X_n\right]+ \lambda^2}
+% 	\]
+% \end{lemma}
+% \begin{proof}
+% 	For \(\alpha > 0\) we have
+% 	\[
+% 	\mathbb{P}\left(\sup_{0 \leq k \leq n} X_k \geq c \right) \leq \mathbb{P}\left(\sup_{0 \leq k \leq n} (X_k + \alpha)^2 \geq (c+\alpha)^2 \right)
+% 	\]
+% 	As \(\{X_n\}\) is a martingale then \(\{\left(X_n + \alpha\right)^2\}\) is a sub-martingale, so we can apply maximal Doob's inequality (see Theorem 12.4.2 in \cite{jf-le-gall}), which gives
 	
-	\begin{align*}
-		\mathbb{P}\left(\sup_{0 \leq k \leq n} (X_k + \alpha)^2 \geq (c + \alpha) \right) &\leq \frac{\mathbb{E}\left[(X_n + c)^2\right]}{(c + \alpha)^2}\\
-		&= \frac{\mathbb{V}ar\left[X_n\right] + \alpha^2}{(c + \alpha)^2}\\
-		&= \frac{\mathbb{V}ar\left[X_n\right] + \left(\frac{\mathbb{V}ar\left[X_n\right]}{c}\right)^2}{\left(c + \frac{\mathbb{V}ar\left[X_n\right]}{c}\right)^2} \text{; Taking \(\alpha = \frac{\mathbb{V}ar\left[X_n\right]}{c}\)}\\
-		&= \frac{\mathbb{V}ar\left[X_n\right]}{\mathbb{V}ar\left[X_n\right] + c^2}
-	\end{align*}
-	which proves the claim.		
-\end{proof}
+% 	\begin{align*}
+% 		\mathbb{P}\left(\sup_{0 \leq k \leq n} (X_k + \alpha)^2 \geq (c + \alpha)^2 \right) &\leq \frac{\mathbb{E}\left[(X_n + \alpha)^2\right]}{(c + \alpha)^2}\\
+% 		&= \frac{\mathbb{V}ar\left[X_n\right] + \alpha^2}{(c + \alpha)^2}\\
+% 		&= \frac{\mathbb{V}ar\left[X_n\right] + \left(\frac{\mathbb{V}ar\left[X_n\right]}{c}\right)^2}{\left(c + \frac{\mathbb{V}ar\left[X_n\right]}{c}\right)^2} \text{; Taking \(\alpha = \frac{\mathbb{V}ar\left[X_n\right]}{c}\)}\\
+% 		&= \frac{\mathbb{V}ar\left[X_n\right]}{\mathbb{V}ar\left[X_n\right] + c^2}
+% 	\end{align*}
+% 	which proves the claim.		
+% \end{proof}
 
 \begin{proposition}\label{prop:exp-fam}
-	For regular one-parameter exponential families with the parameter of interest $\theta_k$ being the mean parameter, we have $\mathbb{V}ar(\xi_{1,k}) = I_k(\theta_k)^{-1}$.
+	For regular one-parameter natural exponential families with the parameter of interest $\theta_k$ being the mean parameter, we have $\mathbb{V}ar\left[\xi_{1,k}\right] = I_k(\theta_k)^{-1}$.
 \end{proposition}
 \begin{proof}
 	Consider the response of treatment $k$ following a natural exponential family
@@ -129,7 +131,7 @@
 	\[
 	\mathbb{E}[\xi_{1,k}] = \theta_k,
 	\qquad
-	\mathbb{V}ar(\xi_{1,k}) = A''(\eta_k).
+	\mathbb{V}ar\left[\xi_{1,k}\right] = A''(\eta_k).
 	\]
 	Moreover, by the Fisher information reparameterization formula,
 	\[
@@ -142,9 +144,29 @@
 	=
 	\frac{1}{A''(\eta_k)},
 	\]
-	which yields \(\mathbb{V}ar(\xi_{1,k}) = I_k(\theta_k)^{-1}.\)
+	which yields \(\mathbb{V}ar\left[\xi_{1,k}\right] = I_k(\theta_k)^{-1}.\)
 	This includes, for example, Bernoulli, Poisson, exponential, and normal models with known variance.
 \end{proof}
+
+{\color{revisiongreen}
+\begin{lemma}[Martingale CLT, \citealp{heyde1980}, Corollary~3.1]
+\label{lem:hall-heyde-clt}
+Let \((Z_{n,t},\mathcal{G}_{n,t})_{1\leq t\leq m_n}\) be a
+square-integrable adapted array, with \(m_n\uparrow\infty\).
+Suppose that, for some constant \(\sigma^2\geq0\),
+\begin{enumerate}[label=(\roman*)]
+\item \(\mathbb{E}[Z_{n,t}\mid\mathcal{G}_{n,t-1}]=0\), \(1\leq t\leq m_n\).
+\item \(\mathcal{G}_{n,t}\subseteq\mathcal{G}_{n+1,t}\), \(0\leq t\leq m_n\).
+\item \(\sum_{t=1}^{m_n}\mathbb{E}[Z_{n,t}^2\mid\mathcal{G}_{n,t-1}]\xrightarrow{\mathbb P}\sigma^2\).
+\item \(\sum_{t=1}^{m_n}\mathbb{E}[Z_{n,t}^2\mathbf{1}_{\{|Z_{n,t}|>\varepsilon\}}\mid\mathcal{G}_{n,t-1}]\xrightarrow{\mathbb P}0\), for every \(\varepsilon>0\) (Lindeberg).
+\end{enumerate}
+Then
+\[
+\sum_{t=1}^{m_n}Z_{n,t}
+\xrightarrow{\mathcal D}\mathcal N(0,\sigma^2).
+\]
+\end{lemma}
+}
 
 \subsection{Analytical Technical Lemmas}
 \begin{lemma}\label{lem:convergence}

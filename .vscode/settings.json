@@ -22,6 +22,19 @@
     },
     "latex-workshop.latex.tools": [
         {
+            "name": "latexmk-pdflatex",
+            "command": "latexmk",
+            "args": [
+                "-pdf",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
             "name": "latexmk",
             "command": "latexmk",
             "args": [

@@ -238,7 +238,8 @@ Theorem~\ref{thm:LLN}.
 \label{sec:norm_clt}
 
 \begin{lemma}[Componentwise joint CLT]\label{lem:componentwise}
-\lean{AlphaRAR.estimatorError_joint_tendsto_multivariateGaussian}\leanok
+\lean{AlphaRAR.Revised.componentwise_clt,
+AlphaRAR.estimatorError_joint_tendsto_multivariateGaussian}\leanok
 \uses{def:estimator, def:counts, def:condA}
 Consider any RAR procedure whose pull counts are \emph{regular}: for every $k$ there is a
 deterministic sequence $c_{k,n}\to\infty$ with
@@ -250,6 +251,8 @@ Under Condition~\textbf{A}, with $D_n := \mathrm{diag}(\sqrt{N_{n,1}},\dots,\sqr
   D_n(\estParams_n - \Params) \eqdist \mathcal{N}\!\big(0, \mathrm{diag}(V_1,\dots,V_K)\big).
 \]
 No positivity of the limiting proportions is required, so this covers \emph{sparse} arms $v_k=0$.
+This is Lemma~4.5 of the revised paper; the first version (arXiv v1) assumed only
+$N_{n,k}\to\infty$, which is not enough (Remark~\ref{rem:componentwise_regularity}, erratum E1).
 \end{lemma}
 
 \begin{remark}[The regularity hypothesis is necessary]\label{rem:componentwise_regularity}
@@ -277,7 +280,13 @@ transfers the limit to the self-normalized vector $(Q_{n,k}/\sqrt{N_{n,k}})_k$. 
 identity (Lemma~\ref{lem:estimator_bahadur}) and one more Slutsky step give the statement for
 $D_n(\estParams_n-\Params)$.
 
-\emph{Formalization.} \texttt{AlphaRAR.estimatorError\_joint\_tendsto\_multivariateGaussian}. The key
+\emph{Formalization.} Two independent proofs. \texttt{AlphaRAR.Revised.componentwise\_clt} is the
+statement of the revised paper, proved along its Appendix~A without the declarations below: the
+array \texttt{AlphaRAR.Revised.cwArray} of the $Z_{n,t}$, its conditional variance and Lindeberg
+sums (\texttt{cw\_predVar\_tendsto}, \texttt{cw\_lindeberg\_tendsto}), the martingale CLT
+(\texttt{cw\_rowSum\_tendsto}), Cramér--Wold (\texttt{cw\_vector\_tendsto}), and the Bahadur
+identity with Slutsky. The earlier \texttt{AlphaRAR.estimatorError\_joint\_tendsto\_multivariateGaussian}
+is slightly more general ($N_{n,k}/c_{k,n}\to v_k>0$). Its key
 device is that the weighted martingale array \texttt{AlphaRAR.wArray} carries \emph{row-dependent}
 weights $w^{(n)}_k = w_k/\sqrt{c_{k,n}}$, so one array covers both a common normalizer and per-arm
 ones; the Cramér--Wold projection is

@@ -1,0 +1,260 @@
+
+The adaptive design framework introduced above is augmented with a forced-exploration mechanism ensuring that each treatment continues to receive sufficient sampling throughout the experiment while the adaptive targeting rule remains active. Such a mechanism facilitate asymptotic analysis and prevent treatment starvation, while avoiding rigid allocation structures that do not adapt to the evolving information collected during the trial.
+
+The forced-exploration component dynamically allocates observations to under-sampled
+treatments in a randomized manner, ensuring adequate information acquisition without
+compromising the adaptivity of the design. This approach is inspired by tracking-based
+strategies from the bandit best-arm identification literature, notably the forced-exploration
+component of the D-Tracking algorithm of \cite{garivier2016optimal}. By operating
+alongside the targeting rule, forced exploration provides a natural mechanism to
+guarantee that $N_{n,k}\to\infty$ for all treatments $k$, including in settings where
+the target allocation may be sparse.
+ 
+\begin{definition}[$\alpha$RTS with forced exploration]\label{def:rts-fe-def}
+	%{\color{revisionred} Let $h:\mathbb{N}\to\mathbb{R}$ a function such that
+%		\begin{enumerate}[label=(\roman*)]
+%			\item $\lim\limits_{n \to +\infty} h(n) = +\infty$
+%			\item $h(n)=o(\sqrt{n})$ as \(n \to +\infty\)
+%	\end{enumerate}}
+	
+	{\color{revisiongreen} Let $h:\mathbb{N}\to\mathbb{R}_+$ be non-decreasing and satisfying
+		\begin{enumerate}[label=(\roman*)]
+			\item $\lim\limits_{n \to +\infty} h(n) = +\infty$
+			\item $h(n) = o(n)$ as \(n \to +\infty\)
+		\end{enumerate}
+	}
+	Also we define the following sets
+	\begin{equation}
+		\mathbf{U}_m:=\{j\in[K]:\ N_{m,j}\le h(m)\},\qquad \mathbf{S}_m:=\arg\min_{j\in U_m} N_{m,j}.
+	\end{equation}
+	A design is in the \(\alpha\)RTS-FE family if its allocation probabilities obey:
+	\begin{align}
+		&\textbf{(Forced exploration)}\quad \mathbf{U}_m\neq\emptyset\ \Rightarrow\ \forall a\in \mathbf{S}_m:\ p_{m+1,a}=\frac{1}{|\mathbf{S}_m|};\label{eq:fe-phase}\\
+		&\textbf{(Otherwise)}\quad \mathbf{U}_m=\emptyset\ \Rightarrow\ \text{$p_{m+1}$ satisfies \eqref{eq:throttle} for some $\alpha\in[0,1)$}.\label{eq:fe-otherwise}
+	\end{align}
+\end{definition}
+
+% \todory{this example is no longer valid, add also the example of \(n^{\gamma}\) where \(\gamma \in (1/2, 1)\)}
+%{\color{revisionred} \begin{example}
+%		In \cite{garivier2016optimal}, the \textit{D-Tracking} algorithm is composed of two parts, the \textit{Tracking} part as presented earlier, and the second part consists in \textit{Forced Exploration} that coincides with the \textit{\(\alpha\)RTS-FE} family with \(\alpha=0\), where they chose \(h(n) = \left(\sqrt{n} - \frac{K}{2}\right)^+.\) Note that this function doesn't verify the second condition of Definition \ref{def:rts-fe-def}. In our experiments, we use instead the function \(h(n) = \left(n^{\frac{1}{3}} - \frac{K}{2}\right)^+\) that satisfies the two conditions.
+%\end{example}}
+{\color{revisiongreen}
+\begin{example}
+The D-Tracking algorithm of \cite{garivier2016optimal} combines a tracking step with forced exploration and corresponds to an \(\alpha\)RTS-FE design with \(\alpha=0\), using the threshold \(h(n)=(\sqrt n-K/2)^+\). This function satisfies the conditions of Definition~\ref{def:rts-fe-def}, as does the threshold \(h(n)=(n^{1/3}-K/2)^+\) used in our experiments. More generally, \(h(n)=n^\gamma\), with \(0<\gamma<1\), is non-decreasing, diverges, and satisfies \(h(n)=o(n)\).
+\end{example}}
+
+\subsection{Asymptotic Properties for Non-Sparse Target Allocations under Forced Exploration}
+
+We first show that the introduction of forced exploration does not alter the asymptotic behavior established for the \(\alpha RTS\) family for non-sparse target allocations, i.e. target allocations that satisfy {Condition} \hyperlink{CB}{\textbf{B}}.
+
+\begin{theorem}[Validity under Forced Exploration]\label{thm:forced} Under conditions \hyperlink{CA}{\textbf{A}} and \hyperlink{CB}{\textbf{B}}, Theorem~\ref{thm:LLN} and Theorem~\ref{thm:normality-gen-erade} %and \ref{thm:efficiency}
+	remain valid for any design in the \(\alpha\)RTS-FE family.
+\end{theorem}
+
+
+
+%{\color{revisionred}
+%\begin{proof}[Proof sketch] The proof follow the exact same template as that for $\alpha$RTS, with the twist of introducing an alternative sequence $\ell_{n,k}$ defined as follow:
+%\begin{equation*}
+%	\ell_{n,k} := \max \left\{\, m \leq n : \frac{N_{m,k}}{m} \leq \hat{\rho}_{m,k} \text{ or } \left(k \in \text{arg}\!\min_{j \in U_m} N_{m,j}\text{ and } \mathbf{U}_m \neq \emptyset\right) \;.\right\}
+%\end{equation*}
+%$\ell_{n,k}$ now represents the last time before \(n\) at which treatment \(k\) is under-sampled or is the least sampled among treatments belonging to \(U_{\ell_{n,k}}\). We prove in Lemma~\ref{lem:preliminary2} in Appendix~\ref{appnB} that the conditions in Lemma~\ref{lem:generic-conditions-main} are valid for this new sequence $\ell_{n,k}$. The conclusion follows. The proof of Lemma~\ref{lem:preliminary2} hinges on some properties on the function \(h\) to establish that
+%\begin{align*}
+%	N_{\ell_{n,k},k} - \ell_{n,k} \hat{\rho}_{\ell_{n,k},k}
+%	&\leq h(\ell_{n,k})
+%	= o(\sqrt{n})
+%	\: .
+%\end{align*}
+%%From there, the conclusion follows from the same argument as those given in Section~\ref{sec:rts-proof}.
+%%Using these two results, it is possible to proceed exactly the same way as in Section \ref{sec:rts-proof} to conclude on the proof.
+%\end{proof}
+%}
+
+\begin{proof}[Proof sketch]
+{\color{revisiongreen}
+As for \(\alpha\)RTS, we use Lemma~\ref{lem:generic-conditions-main} to establish the results. To account for forced exploration, we define the last hitting time
+\[
+\ell_{n,k}:=\max\left\{m\leq n:
+\frac{N_{m,k}}m\leq\hat\rho_{m,k}
+\ \text{or}\ \bigl(\mathbf U_m\ne\varnothing,\ k\in\mathbf S_m\bigr)\right\},
+\]
+with the same initialization convention as for the RTS last hitting times. Thus \(\ell_{n,k}\) is the last time arm \(k\) was under-sampled or selected for forced exploration.
+
+\begin{lemma}[Verification for the RTS-FE sequence]\label{lem:fe-two-stage}
+Under Conditions~\hyperlink{CA}{\textbf{A}} and~\hyperlink{CB}{\textbf{B}}, the RTS-FE last hitting times satisfy the three conditions of Lemma~\ref{lem:generic-conditions-main}.
+\end{lemma}
+
+We sketch the proof of Lemma~\ref{lem:fe-two-stage}; the details are in Appendix~\ref{appnB:nonsparse}. First, the RTS-FE rule gives
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq Km_0+h(n)=o(n).
+\]
+The consistency argument in Appendix~\ref{proof:thm1} applies with this \(o(n)\) bound, giving
+\[
+\frac{N_{n,k}}n\longrightarrow v_k>0\qquad\text{a.s.},\quad k\in[K].
+\]
+
+Since \(h(n)=o(n)\), there is an almost surely finite \(T\) such that \(\mathbf U_m=\varnothing\) for all \(m\geq T\). Consequently,
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq
+\begin{cases}
+0, & \ell_{n,k}\geq T,\\
+T, & \ell_{n,k}<T,
+\end{cases}
+\]
+and hence
+\[
+N_{\ell_{n,k},k}-\ell_{n,k}\hat\rho_{\ell_{n,k},k}
+\leq O(1)=o(\sqrt n)\qquad\text{a.s.}
+\]
+The other two conditions are verified in Appendix~\ref{appnB:nonsparse}.
+
+Lemma~\ref{lem:fe-two-stage} verifies the conditions of Lemma~\ref{lem:generic-conditions-main}, which gives the conclusions of Theorems~\ref{thm:LLN} and~\ref{thm:normality-gen-erade}.
+}	
+\end{proof}
+\subsection{Sparse Allocation Target} 
+
+In this section we relax Condition \hyperlink{CB}{\textbf{B}} to incorporate possibly sparse target allocations, in the following sense.
+
+\begin{definition}[Sparse Target Allocation]
+	A target allocation function \(\rho: \mathbb{R}^K \to [0,1]^K\) is said to be sparse at \(\Theta\) if one or more components of the target vector \(v = \rho(\Theta)\) are equal to zero.
+\end{definition}
+
+We now establish consistency and convergence rates for \(\alpha\)RTS-FE design for sparse target allocation. The proof of all statements in this section can be found in Appendix~\ref{proofs:sparse-case}.
+
+%In particular, the following result does not require the target allocation \(v = \rho(\Theta)\) to lie in the interior of the simplex and allows for components \(v_k = 0\).
+
+{\color{revisiongreen}
+Forced exploration gives, by Lemma~\ref{lem:fe-lower-bound}, for every \(k\in[K]\) and all sufficiently large \(n\),
+\[
+N_{n,k}\geq h\!\left(n-K\lceil h(n)\rceil-1\right).
+\]
+This bound follows from the allocation rule alone and ensures that every treatment is sampled infinitely often.
+}
+
+\begin{theorem}[Consistency and rate]\label{thm:sparse-rate}
+	Under condition \hyperlink{CA}{\textbf{A}} {\color{revisiongreen} and assuming that \(\rho\) is continuous at \(\Theta\)}, \(\alpha\)RTS-FE satisfies as \(n \to +\infty\), for all $k \in [K]$,
+	\[
+	N_{n,k}\xrightarrow{\text{a.s.}}+\infty,\qquad
+	\frac{N_{n,k}}{n}\xrightarrow{\text{a.s.}}v_k \ \ \ \
+	\text{ and } \ \ \ \ \hat\theta_{n,k}-\theta_k=O\!\left(\sqrt{\frac{\log\log N_{n,k}}{N_{n,k}}}\right)\text{ a.s.}.
+	\]
+{\color{revisiongreen}
+Moreover,
+\(
+\|\hat\Theta_n-\Theta\|
+=O\!\left(\sqrt{\frac{\log\log n}
+{h\!\left(n-K\lceil h(n)\rceil-1\right)}}\right)
+\qquad\text{a.s.}
+\)
+}
+\end{theorem}
+% Proof check: verify the uses of the non-sparse case in the proof of Theorem~\ref{thm:sparse-rate}.
+
+{\color{revisiongreen}
+We next establish joint asymptotic normality of the treatment effect estimators.
+To apply Lemma~\ref{lem:componentwise}, we need a deterministic sampling scale
+for each treatment. For \(v_k>0\), Theorem~\ref{thm:sparse-rate} gives
+\(N_{n,k}\sim nv_k\) almost surely. The following lemma provides the scale
+for sparse treatments under additional regularity and exploration conditions.
+
+For the following results, we use Condition~\hyperlink{CC}{\textbf{C}}.
+\begin{description}
+\item[\hypertarget{CC}{\textbf{Condition C}}] The target function \(\rho\) and the exploration function \(h\) satisfy:
+\begin{itemize}
+\item \(\rho\) is continuous at \(\Theta\); on some open neighborhood \(\mathcal U\) of \(\Theta\), \(\rho_k\in C^2(\mathcal U)\) and \(\rho_k\geq0\) for every \(k\) with \(v_k=0\).
+\item \(\sqrt{n\log\log n}=o(h(n))\) and \(h\bigl(n-K\lceil h(n)\rceil-1\bigr)\sim h(n)\) as \(n\to\infty\).
+\end{itemize}
+\end{description}
+
+\begin{restatable}{lemma}{sparsestability}[Sparse-arm allocation]
+\label{lem:sparse-allocation}
+Consider an \(\alpha\)RTS-FE design satisfying conditions~\hyperlink{CA}{\textbf{A}} and \hyperlink{CC}{\textbf{C}}.
+Then, for every treatment \(k\) with \(v_k=0\),
+\[
+\frac{N_{n,k}}{h(n)}\xrightarrow{\mathrm{a.s.}}1.
+\]
+\end{restatable}
+
+Combining Lemma~\ref{lem:sparse-allocation} with Theorem~\ref{thm:sparse-rate}
+gives \(N_{n,k}/c_{n,k}\to1\) almost surely for every \(k\), where
+\[
+c_{n,k}=\begin{cases}
+h(n), & v_k=0,\\
+nv_k, & v_k>0.
+\end{cases}
+\]
+Lemma~\ref{lem:componentwise} therefore yields the following result.
+
+\begin{corollary}\label{corr:componentwise}
+Under conditions~\hyperlink{CA}{\textbf{A}} and \hyperlink{CC}{\textbf{C}}, an \(\alpha\)RTS-FE design satisfies
+\[
+D_n(\widehat\Theta_n-\Theta)
+\xrightarrow{\mathcal D}
+\mathcal N\!\left(0,\operatorname{diag}(V_1,\ldots,V_K)\right),
+\qquad n\to\infty,
+\]
+where \(D_n=\operatorname{diag}(\sqrt{N_{n,1}},\ldots,\sqrt{N_{n,K}})\).
+\end{corollary}
+}
+
+
+%{\color{revisionred} \begin{remark}[CLTs under sparsity]\label{cor:sparse-clt}
+%		The normalization in Corollary~\ref{corr:componentwise} is component-wise and depends on \(N_{n,k}\), rather than on \(n\). This formulation naturally accommodates sparse targets, for which
+%		\(v_k = 0\) for some $k$. We note that when \(v \in (0, 1)^K\), this result recovers some known asymptotic normality results established for response-adaptive procedures that converge almost surely to their targets (Lemma 1 from  \cite{hu2006asymptotically}).
+%\end{remark}}
+
+{\color{revisiongreen}
+\begin{remark}[CLTs under sparsity]
+The componentwise normalization in Corollary~\ref{corr:componentwise} accommodates different sampling rates: \(\sqrt{N_{n,k}}\sim\sqrt{nv_k}\) almost surely when \(v_k>0\), whereas \(\sqrt{N_{n,k}}\sim\sqrt{h(n)}\) almost surely when \(v_k=0\). When \(v\in(0,1)^K\), the corollary yields
+\[
+\sqrt n(\hat\Theta_n-\Theta)
+\xrightarrow{\mathcal D}
+\mathcal N\!\left(0,\operatorname{diag}\left(\frac{V_1}{v_1},\ldots,\frac{V_K}{v_K}\right)\right),
+\]
+recovering known asymptotic normality results for response-adaptive procedures whose allocation proportions converge almost surely to positive targets (Lemma~1 of \cite{hu2006asymptotically}).
+\end{remark}
+}
+
+
+{\color{revisiongreen}
+\subsection{Asymptotic calibration of the Pearson test}
+The componentwise CLT also yields a chi-square test for homogeneity of Bernoulli treatment means under both sparse and non-sparse sampling scales. The proof of the following lemma is given in Appendix~\ref{proof:pearson}.
+}
+
+%{\color{revisionred}
+%\begin{lemma}
+%		Define the quantities \(S_{n,k} := N_{n,k} \hat{\theta}_{n,k}\) and 
+%		\(\tilde{\theta}_n := \sum_{k=1}^K \frac{N_{n,k}}{n} \hat{\theta}_{n,k}\).	
+%		Consider a RAR procedure under which \(N_{n,k} \to +\infty\), then the Pearson Chi-square statistic \(\mathcal{X}_n := \sum_{k=1}^K \frac{\left(S_{n,k} - N_{n,k}\tilde{\theta}_n\right)^2}{N_{n,k}\tilde{\theta}_n (1 - \tilde{\theta}_n)}\)
+%		satisfies
+%		\(\mathcal{X}_n \xrightarrow{\mathcal{D}} \chi^2_{K-1}\) under the null hypothesis.
+%	\end{lemma}
+%}
+
+{\color{revisiongreen}
+\begin{lemma}\label{lem:pearson}
+Consider \(K\) Bernoulli arms and a RAR procedure such that, for every \(k\in[K]\), there exists a deterministic positive sequence \((c_{n,k})_n\) satisfying
+\(
+\frac{N_{n,k}}{c_{n,k}}\xrightarrow{\mathrm{a.s.}}1,
+\quad c_{n,k}\to\infty.
+\)
+Define
+\(
+S_{n,k}:=N_{n,k}\hat\theta_{n,k},\text{ and }
+\tilde\theta_n:=\sum_{k=1}^K\frac{N_{n,k}}n\hat\theta_{n,k}.
+\)
+Under \(\mathcal H_0:\theta_1=\cdots=\theta_K=\theta\), with \(0<\theta<1\),
+\[
+\mathcal X_n:=\sum_{k=1}^K
+\frac{(S_{n,k}-N_{n,k}\tilde\theta_n)^2}
+{N_{n,k}\tilde\theta_n(1-\tilde\theta_n)}
+\xrightarrow{\mathcal D}\chi^2_{K-1}.
+\]
+\end{lemma}
+}
+	\begin{remark}
+		%{\color{revisionred}Lemma \ref{lem:pearson} is valid for all \(\alpha\)RTS designs when Condition \hyperlink{CB}{\textbf{B}} is verified, and also for \(\alpha\)RTS-FE designs.}
+        {\color{revisiongreen}The assumptions of Lemma~\ref{lem:pearson} hold for \(\alpha\)RTS and \(\alpha\)RTS-FE designs under Condition~\hyperlink{CB}{\textbf{B}}, with \(c_{n,k}=nv_k\). For possibly sparse targets, they hold for \(\alpha\)RTS-FE designs under Condition~\hyperlink{CC}{\textbf{C}}, with \(c_{n,k}=h(n)\) when \(v_k=0\) and \(c_{n,k}=nv_k\) otherwise.}
+\end{remark}
