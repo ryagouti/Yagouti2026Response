@@ -2,9 +2,9 @@
 title: Yagouti2026Response
 description: by Remy Degenne
 baseurl: ""
-url: "https://RemyDegenne.github.io/Yagouti2026Response"
-github_username: RemyDegenne
-repository: RemyDegenne/Yagouti2026Response
+url: "https://ryagouti.github.io/Yagouti2026Response"
+github_username: ryagouti
+repository: ryagouti/Yagouti2026Response
 
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
