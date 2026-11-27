@@ -50,7 +50,7 @@ directly. That matters, because the decay bound has a *random* constant (the LIL
 hypothesis of the form "`ρ̂ ≤ g` for a deterministic `g`" is not dischargeable — see
 `aRTSTarget_le_loglog_of_quadratic`. The decay is then applied *pathwise* afterwards, via
 `not_aRTSFEUnder_of_sched_lt`. -/
-lemma not_pulled_of_not_aRTSFEUnder_of_alpha_zero [DecidableEq 𝓐] [Finite 𝓐]
+lemma not_pulled_of_not_aRTSFEUnder_of_alpha_zero [DecidableEq 𝓐]
     [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {θ₀ : 𝓐 → ℝ} {T : (𝓐 → ℝ) → 𝓐 → ℝ}
     (hT : Measurable T) {hsched : ℕ → ℝ} (hARTSFE : IsARTSFE alg θ₀ T hsched 0) (k : 𝓐) :
@@ -321,7 +321,7 @@ Step 3 (`not_aRTSFEUnder_of_sched_lt`) is what relates this count to the one
 @[specifies throttledIndicator "what the indicator is built to count, and that the count is \
 negligible: pulls the design was free *not* to make are `o(h(n))`, so forced exploration alone \
 fixes a sparse arm's sample size to first order"]
-lemma throttled_count_div_sched_tendsto_zero [DecidableEq 𝓐] [Finite 𝓐]
+lemma throttled_count_div_sched_tendsto_zero [DecidableEq 𝓐]
     [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {hsched : ℕ → ℝ} {θ₀ : 𝓐 → ℝ}
     {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Measurable T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
@@ -973,7 +973,7 @@ the counter `E n = ∑_{i<n} 𝟙{throttled pull of k at i}` has all three prope
 
 Note `n₀` and `g` are allowed to depend on `ω`, which is essential: the decay constant comes
 from the law of the iterated logarithm and is genuinely random. -/
-lemma fEfed_of_decay [Finite 𝓐] [DecidableEq 𝓐] [StandardBorelSpace 𝓐] [Nonempty 𝓐]
+lemma fEfed_of_decay [DecidableEq 𝓐] [StandardBorelSpace 𝓐] [Nonempty 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) {hsched : ℕ → ℝ} {θ₀ : 𝓐 → ℝ}
     {T : (𝓐 → ℝ) → 𝓐 → ℝ} (hT : Measurable T) (hTnn : ∀ z k, 0 ≤ T z k) {k : 𝓐} {α : ℝ}
     (hα : 0 ≤ α)

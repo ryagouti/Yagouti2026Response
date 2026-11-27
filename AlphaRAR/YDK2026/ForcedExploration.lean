@@ -768,7 +768,7 @@ omit [IsProbabilityMeasure P] in
 
 This is what lets the throttle be applied *inside* a conditional expectation given `ℱ_{m-1}`, and it
 is what makes the `α = 0` argument below work with no decay hypothesis at all. -/
-lemma measurableSet_shiftDown_aRTSFEUnder [DecidableEq 𝓐] [Finite 𝓐]
+lemma measurableSet_shiftDown_aRTSFEUnder [DecidableEq 𝓐]
     (h : IsAlgEnvSeq O A Y alg (Environment.bandit ν) P) (θ₀ : 𝓐 → ℝ) {T : (𝓐 → ℝ) → 𝓐 → ℝ}
     (hT : Measurable T) (hsched : ℕ → ℝ) (k : 𝓐) (m : ℕ) :
     MeasurableSet[h.filtration.shiftDown m]
